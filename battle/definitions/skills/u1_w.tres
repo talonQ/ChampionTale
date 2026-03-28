@@ -1,14 +1,13 @@
-[gd_resource type="Resource" script_class="SkillData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="SkillData" format=3 uid="uid://d1e20hik4uuly"]
 
-[ext_resource type="Script" path="res://battle/skill_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://b1gilu06gqybx" path="res://battle/skill_data.gd" id="1"]
 
 [resource]
 script = ExtResource("1")
 id = &"u1_w"
 display_name = "虚空猛冲"
+description = "高威力单体打击，使用后需冷却。"
 focus_cost = 12
-power = 22
 hit_chance = 0.88
+power = 22
 cooldown_rounds = 2
-target_kind = 1
-self_speed_delta = 0

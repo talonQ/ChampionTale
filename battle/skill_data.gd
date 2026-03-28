@@ -8,6 +8,7 @@ enum TargetKind {
 
 @export var id: StringName
 @export var display_name: String = "技能"
+@export_multiline var description: String = ""
 @export var focus_cost: int = 0
 @export_range(0.0, 1.0) var hit_chance: float = 1.0
 @export var power: int = 0

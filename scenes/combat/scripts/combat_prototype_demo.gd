@@ -39,6 +39,7 @@ const _CombatNarrationController := preload("res://scenes/combat/scripts/combat_
 const _CombatUnitBarsController := preload("res://scenes/combat/scripts/combat_unit_bars_controller.gd")
 const _CombatBattlePick := preload("res://scenes/combat/scripts/combat_battle_pick.gd")
 const _CombatUnitTooltipText := preload("res://scenes/combat/scripts/combat_unit_tooltip_text.gd")
+const _CombatSkillTooltipText := preload("res://scenes/combat/scripts/combat_skill_tooltip_text.gd")
 const _CombatTurnOrderStrip := preload("res://scenes/combat/scripts/combat_turn_order_strip.gd")
 const _BattleUiTheme := preload("res://ui/themes/champion_battle_theme.gd")
 ## 行动条圆圈内贴图（与 visual_lookup_id 对应）；由 `portrait.png`（自 WebP 转换）；缺项则用名字首字占位。
@@ -73,9 +74,8 @@ const _SLOT_POSITION := {
 
 @onready var _battle_message: RichTextLabel = %BattleMessageText
 @onready var _btn_rest: Button = %BtnRest
-@onready var _skill_buttons: HBoxContainer = %SkillButtons
-@onready var _actions: VBoxContainer = %ActionsPanel
-@onready var _actions_bar: HBoxContainer = %ActionsBar
+@onready var _skill_buttons: VBoxContainer = %SkillButtons
+@onready var _right_action_dock: Control = %RightActionDock
 @onready var _battle_tooltip: PanelContainer = %BattleTooltip
 @onready var _tooltip_text: RichTextLabel = %TooltipText
 @onready var _battle_hud_root: Control = %BattleHudRoot
@@ -119,7 +119,7 @@ func _ready() -> void:
 	if use_random_roster and random_pool != null:
 		_state.units = _CombatDemoRoster.create_units_from_random_pool(random_pool, rng)
 	else:
-		_state.units = _CombatDemoRoster.create_units(encounter)
+		_state.units = _CombatDemoRoster.create_units(encounter, rng)
 	_narration = _CombatNarrationController.new(_battle_message)
 	_narration.chars_per_second = battle_text_chars_per_second
 	_narration.read_pause_after_line_sec = battle_text_read_pause_sec
@@ -183,10 +183,9 @@ func _notify_slot_skill_cast(actor: BattleUnitRuntime, skill: SkillData, targets
 
 
 func _set_actions_enabled(on: bool) -> void:
-	_actions_bar.visible = true
-	_actions_bar.modulate.a = 1.0 if on else 0.0
-	_actions_bar.mouse_filter = Control.MOUSE_FILTER_STOP if on else Control.MOUSE_FILTER_IGNORE
-	_actions.visible = true
+	_right_action_dock.visible = true
+	_right_action_dock.modulate.a = 1.0 if on else 0.0
+	_right_action_dock.mouse_filter = Control.MOUSE_FILTER_PASS if on else Control.MOUSE_FILTER_IGNORE
 	_btn_rest.disabled = not on
 	for c in _skill_buttons.get_children():
 		if c is Button:
@@ -329,13 +328,16 @@ func _rebuild_skill_buttons() -> void:
 		return
 	for s in _player_actor.skills:
 		var b := Button.new()
-		b.text = "%s (%d专)" % [s.display_name, s.focus_cost]
+		b.text = s.display_name
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		var cd := _player_actor.skill_cooldown(s)
 		if cd > 0:
 			b.text += " CD:%d" % cd
 			b.disabled = true
 		elif not _player_actor.can_pay_focus(s):
 			b.disabled = true
+		b.set_meta(&"skill_tip_skill", s)
+		b.set_meta(&"skill_tip_actor", _player_actor)
 		b.pressed.connect(_on_skill_button_pressed.bind(s))
 		_skill_buttons.add_child(b)
 
@@ -451,7 +453,15 @@ func _update_hover_tooltip() -> void:
 				_place_battle_tooltip(mouse)
 			return
 		if _is_descendant_of(hovered, _battle_hud_root):
-			_battle_tooltip.visible = false
+			var hud_tip := _battle_tooltip_bbcode_for_hud_hover(hovered)
+			if hud_tip.is_empty():
+				_battle_tooltip.visible = false
+				return
+			_tooltip_text.clear()
+			_tooltip_text.append_text(hud_tip)
+			_battle_tooltip.visible = true
+			_battle_tooltip.reset_size()
+			_place_battle_tooltip(mouse)
 			return
 	var w3d := get_viewport().get_world_3d()
 	var u := _CombatBattlePick.ray_pick_unit(mouse, _camera_3d, w3d)
@@ -482,6 +492,28 @@ func _is_descendant_of(node: Node, ancestor: Node) -> bool:
 			return true
 		n = n.get_parent()
 	return false
+
+
+func _find_enclosing_button(from: Control) -> Button:
+	var n: Node = from
+	while n != null:
+		if n is Button:
+			return n as Button
+		n = n.get_parent()
+	return null
+
+
+func _battle_tooltip_bbcode_for_hud_hover(hovered: Control) -> String:
+	if _btn_rest != null and _is_descendant_of(hovered, _btn_rest):
+		return _CombatSkillTooltipText.format_rest_bbcode()
+	var btn := _find_enclosing_button(hovered)
+	if btn == null or not btn.has_meta(&"skill_tip_skill"):
+		return ""
+	var sk: SkillData = btn.get_meta(&"skill_tip_skill") as SkillData
+	var act: BattleUnitRuntime = btn.get_meta(&"skill_tip_actor") as BattleUnitRuntime
+	if sk == null:
+		return ""
+	return _CombatSkillTooltipText.format_skill_bbcode(sk, act)
 
 
 func _unhandled_input(event: InputEvent) -> void:

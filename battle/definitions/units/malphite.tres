@@ -15,4 +15,4 @@ hp_max = 110
 def_base = 14
 spd_base = 8
 focus_max = 32
-skills = Array[ExtResource("2_034bw")]([ExtResource("2"), ExtResource("3"), ExtResource("4")])
+learnable_skills = Array[ExtResource("2_034bw")]([ExtResource("2"), ExtResource("3"), ExtResource("4")])

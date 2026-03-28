@@ -16,4 +16,4 @@ atk_base = 12
 def_base = 7
 spd_base = 16
 focus_max = 38
-skills = Array[ExtResource("2_mrndw")]([ExtResource("2"), ExtResource("3")])
+learnable_skills = Array[ExtResource("2_mrndw")]([ExtResource("2"), ExtResource("3")])

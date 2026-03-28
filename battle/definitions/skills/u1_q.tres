@@ -1,14 +1,12 @@
-[gd_resource type="Resource" script_class="SkillData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="SkillData" format=3 uid="uid://jjw0w6kkfqku"]
 
-[ext_resource type="Script" path="res://battle/skill_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://b1gilu06gqybx" path="res://battle/skill_data.gd" id="1"]
 
 [resource]
 script = ExtResource("1")
 id = &"u1_q"
 display_name = "虚空突刺"
+description = "对一名敌方造成物理伤害，出手较快。"
 focus_cost = 8
-power = 12
 hit_chance = 0.92
-cooldown_rounds = 0
-target_kind = 1
-self_speed_delta = 0
+power = 12

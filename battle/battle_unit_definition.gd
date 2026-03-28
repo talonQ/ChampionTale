@@ -14,4 +14,7 @@ extends Resource
 @export var def_base: int = 5
 @export var spd_base: int = 10
 @export var focus_max: int = 30
+## 可学习技能池；生成战斗单位时从中无放回随机挑选至多 2 个作为本场携带技能（不含「休息」）。
+@export var learnable_skills: Array[SkillData] = []
+## 兼容旧资源：仅当 `learnable_skills` 为空时，按顺序取自此处，仍最多 2 个。
 @export var skills: Array[SkillData] = []

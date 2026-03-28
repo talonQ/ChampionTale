@@ -1,14 +1,12 @@
-[gd_resource type="Resource" script_class="SkillData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="SkillData" format=3 uid="uid://dfc25wtuayq50"]
 
-[ext_resource type="Script" path="res://battle/skill_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://b1gilu06gqybx" path="res://battle/skill_data.gd" id="1"]
 
 [resource]
 script = ExtResource("1")
 id = &"u2_q"
 display_name = "地震碎片"
+description = "投掷碎片攻击单体敌人，命中较稳。"
 focus_cost = 6
-power = 10
 hit_chance = 0.95
-cooldown_rounds = 0
-target_kind = 1
-self_speed_delta = 0
+power = 10

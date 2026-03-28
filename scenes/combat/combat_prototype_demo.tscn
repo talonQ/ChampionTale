@@ -116,6 +116,36 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
+[node name="RightActionDock" type="MarginContainer" parent="UICanvas/BattleHudRoot" unique_id=2104044687]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -136.0
+offset_top = -19.5
+offset_bottom = 19.5
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="ActionsColumn" type="VBoxContainer" parent="UICanvas/BattleHudRoot/RightActionDock" unique_id=2104044686]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SkillButtons" type="VBoxContainer" parent="UICanvas/BattleHudRoot/RightActionDock/ActionsColumn" unique_id=1213793849]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="BtnRest" type="Button" parent="UICanvas/BattleHudRoot/RightActionDock/ActionsColumn" unique_id=89368874]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "休息（+15 专注）"
+
 [node name="BottomHud" type="VBoxContainer" parent="UICanvas/BattleHudRoot" unique_id=2104044688]
 unique_name_in_owner = true
 layout_mode = 1
@@ -130,29 +160,6 @@ offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_constants/separation = 8
-
-[node name="ActionsBar" type="HBoxContainer" parent="UICanvas/BattleHudRoot/BottomHud" unique_id=1203187288]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 0
-
-[node name="ActionsPanel" type="VBoxContainer" parent="UICanvas/BattleHudRoot/BottomHud/ActionsBar" unique_id=10531168]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Row1" type="HBoxContainer" parent="UICanvas/BattleHudRoot/BottomHud/ActionsBar/ActionsPanel" unique_id=1411357646]
-layout_mode = 2
-
-[node name="BtnRest" type="Button" parent="UICanvas/BattleHudRoot/BottomHud/ActionsBar/ActionsPanel/Row1" unique_id=89368874]
-unique_name_in_owner = true
-layout_mode = 2
-text = "休息（+15 专注）"
-
-[node name="SkillButtons" type="HBoxContainer" parent="UICanvas/BattleHudRoot/BottomHud/ActionsBar/ActionsPanel" unique_id=1213793849]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 6
 
 [node name="MessageFrame" type="PanelContainer" parent="UICanvas/BattleHudRoot/BottomHud" unique_id=1153952853]
 layout_mode = 2

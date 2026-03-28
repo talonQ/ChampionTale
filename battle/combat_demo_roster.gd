@@ -4,15 +4,28 @@ extends RefCounted
 
 
 const DEFAULT_ENCOUNTER := preload("res://battle/definitions/demo_encounter.tres")
+const MAX_EQUIPPED_SKILLS := 2
 
 
-static func create_units(encounter: CombatEncounterDefinition = null) -> Array[BattleUnitRuntime]:
+static func _rng_or_new(rng: RandomNumberGenerator) -> RandomNumberGenerator:
+	if rng != null:
+		return rng
+	var r := RandomNumberGenerator.new()
+	r.randomize()
+	return r
+
+
+static func create_units(
+	encounter: CombatEncounterDefinition = null,
+	rng: RandomNumberGenerator = null,
+) -> Array[BattleUnitRuntime]:
+	var r := _rng_or_new(rng)
 	var enc: CombatEncounterDefinition = encounter if encounter != null else DEFAULT_ENCOUNTER
 	var out: Array[BattleUnitRuntime] = []
 	var slot := 1
 	for def in enc.roster:
 		if def != null:
-			out.append(runtime_from_definition(def, slot))
+			out.append(runtime_from_definition(def, slot, r))
 			slot += 1
 	return out
 
@@ -23,12 +36,12 @@ static func create_units_from_random_pool(
 ) -> Array[BattleUnitRuntime]:
 	if pool == null:
 		push_warning("CombatDemoRoster: random_pool 为空，使用默认遭遇。")
-		return create_units(null)
+		return create_units(null, rng)
 	var need := pool.players_to_field + pool.enemies_to_field
 	var picked := _pick_n_without_replacement(pool.unit_pool, need, rng)
 	if picked.size() < need:
 		push_warning("CombatDemoRoster: 随机池人数不足，使用默认遭遇。")
-		return create_units(null)
+		return create_units(null, rng)
 	var picked_p: Array[BattleUnitDefinition] = []
 	for i in range(pool.players_to_field):
 		picked_p.append(picked[i])
@@ -38,11 +51,11 @@ static func create_units_from_random_pool(
 	var out: Array[BattleUnitRuntime] = []
 	var slot := 1
 	for def in picked_p:
-		out.append(runtime_from_template(def, slot, true))
+		out.append(runtime_from_template(def, slot, true, rng))
 		slot += 1
 	slot = pool.players_to_field + 1
 	for def in picked_e:
-		out.append(runtime_from_template(def, slot, false))
+		out.append(runtime_from_template(def, slot, false, rng))
 		slot += 1
 	return out
 
@@ -70,11 +83,56 @@ static func _pick_n_without_replacement(
 	return p
 
 
+static func _pick_n_skills_without_replacement(
+	pool: Array[SkillData],
+	n: int,
+	rng: RandomNumberGenerator,
+) -> Array[SkillData]:
+	var p: Array[SkillData] = []
+	for s in pool:
+		if s != null:
+			p.append(s)
+	n = mini(maxi(n, 0), p.size())
+	if n == 0:
+		return []
+	for i in range(p.size() - 1, 0, -1):
+		var j := rng.randi_range(0, i)
+		var t: SkillData = p[i]
+		p[i] = p[j]
+		p[j] = t
+	p.resize(n)
+	return p
+
+
+static func _assign_runtime_skills(
+	u: BattleUnitRuntime,
+	def: BattleUnitDefinition,
+	rng: RandomNumberGenerator,
+) -> void:
+	u.skills = []
+	var pool: Array[SkillData] = []
+	for s in def.learnable_skills:
+		if s != null:
+			pool.append(s)
+	if pool.size() > 0:
+		u.skills = _pick_n_skills_without_replacement(
+			pool,
+			mini(MAX_EQUIPPED_SKILLS, pool.size()),
+			rng,
+		)
+		return
+	for s in def.skills:
+		if s != null and u.skills.size() < MAX_EQUIPPED_SKILLS:
+			u.skills.append(s)
+
+
 static func runtime_from_template(
 	def: BattleUnitDefinition,
 	battle_slot_id: int,
 	player_side: bool,
+	rng: RandomNumberGenerator = null,
 ) -> BattleUnitRuntime:
+	var r := _rng_or_new(rng)
 	var u := BattleUnitRuntime.new()
 	u.id = battle_slot_id
 	u.is_player_side = player_side
@@ -88,14 +146,16 @@ static func runtime_from_template(
 	u.spd_base = def.spd_base
 	u.focus_max = def.focus_max
 	u.focus = def.focus_max
-	u.skills = []
-	for s in def.skills:
-		if s != null:
-			u.skills.append(s)
+	_assign_runtime_skills(u, def, r)
 	return u
 
 
-static func runtime_from_definition(def: BattleUnitDefinition, battle_slot_id: int) -> BattleUnitRuntime:
+static func runtime_from_definition(
+	def: BattleUnitDefinition,
+	battle_slot_id: int,
+	rng: RandomNumberGenerator = null,
+) -> BattleUnitRuntime:
+	var r := _rng_or_new(rng)
 	var u := BattleUnitRuntime.new()
 	u.id = battle_slot_id
 	u.visual_asset_id = def.visual_id if def.visual_id > 0 else def.unit_id
@@ -109,8 +169,5 @@ static func runtime_from_definition(def: BattleUnitDefinition, battle_slot_id: i
 	u.spd_base = def.spd_base
 	u.focus_max = def.focus_max
 	u.focus = def.focus_max
-	u.skills = []
-	for s in def.skills:
-		if s != null:
-			u.skills.append(s)
+	_assign_runtime_skills(u, def, r)
 	return u

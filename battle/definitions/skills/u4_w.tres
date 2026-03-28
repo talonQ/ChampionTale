@@ -1,14 +1,13 @@
-[gd_resource type="Resource" script_class="SkillData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="SkillData" format=3 uid="uid://bqi0s14g1mon0"]
 
-[ext_resource type="Script" path="res://battle/skill_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://b1gilu06gqybx" path="res://battle/skill_data.gd" id="1"]
 
 [resource]
 script = ExtResource("1")
 id = &"u4_w"
 display_name = "海石三叉戟"
+description = "三叉戟刺击，较高威力，需短暂冷却。"
 focus_cost = 10
-power = 17
 hit_chance = 0.86
+power = 17
 cooldown_rounds = 1
-target_kind = 1
-self_speed_delta = 0
