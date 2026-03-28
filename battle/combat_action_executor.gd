@@ -55,14 +55,29 @@ static func apply_skill(
 	if skill.target_kind == SkillData.TargetKind.SINGLE_ENEMY:
 		var target := targets[0]
 		if BattleSkillResolver.roll_hit(skill):
-			var dmg := BattleSkillResolver.compute_damage(actor, skill, target)
-			BattleSkillResolver.apply_damage(target, dmg)
+			var parts: Array[String] = []
+			if skill.deals_damage:
+				var dmg := BattleSkillResolver.compute_damage(actor, skill, target)
+				BattleSkillResolver.apply_damage(target, dmg)
+				var tail := "击中了 %s，造成 %d 点伤害！" % [short_name(target), dmg]
+				if not target.is_alive():
+					tail += " %s 倒下了！" % short_name(target)
+				parts.append(tail)
+			else:
+				parts.append("击中了 %s。" % short_name(target))
+			if target.is_alive() and skill.target_speed_delta != 0:
+				target.spd_mod += skill.target_speed_delta
+				if skill.target_speed_delta > 0:
+					parts.append(
+						"%s 的速度提升了！（当前速度 %d）" % [short_name(target), target.effective_spd()]
+					)
+				else:
+					parts.append(
+						"%s 的速度降低了！（当前速度 %d）" % [short_name(target), target.effective_spd()]
+					)
 			if on_unit_changed.is_valid():
 				on_unit_changed.call(target)
-			var tail := "击中了 %s，造成 %d 点伤害！" % [short_name(target), dmg]
-			if not target.is_alive():
-				tail += " %s 倒下了！" % short_name(target)
-			out.append(opener + "\n" + tail)
+			out.append(opener + "\n" + "\n".join(PackedStringArray(parts)))
 		else:
 			out.append(opener + "\n但是没有命中！（专注仍会消耗）")
 	elif skill.target_kind == SkillData.TargetKind.NONE:

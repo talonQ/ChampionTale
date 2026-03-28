@@ -5,11 +5,7 @@
 [ext_resource type="Resource" uid="uid://c1nwpfx6u5v1" path="res://battle/definitions/demo_encounter.tres" id="3_demo_encounter"]
 [ext_resource type="Resource" uid="uid://jg1kkwpvchfx" path="res://battle/definitions/random_demo_pool.tres" id="4_random_pool"]
 [ext_resource type="Script" uid="uid://lbhtj7of3ql0" path="res://scenes/combat/scripts/combat_outline_post.gd" id="5_outline_post"]
-[ext_resource type="Shader" path="res://battle/shaders/outline_postprocess.gdshader" id="6_outline_shader"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_outline"]
-shader = ExtResource("6_outline_shader")
-shader_parameter/thickness = 1.2
+[ext_resource type="Shader" uid="uid://8d2v3vg2ee7k" path="res://battle/shaders/outline_postprocess.gdshader" id="6_outline_shader"]
 
 [sub_resource type="Environment" id="Environment_battle"]
 background_mode = 1
@@ -17,6 +13,11 @@ background_color = Color(0.11, 0.13, 0.17, 1)
 ambient_light_source = 2
 ambient_light_color = Color(0.5, 0.54, 0.62, 1)
 ambient_light_energy = 0.5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_outline"]
+shader = ExtResource("6_outline_shader")
+shader_parameter/outline_color = Color(0.2, 0.95, 0.35, 1)
+shader_parameter/thickness = 1.2
 
 [sub_resource type="StandardMaterial3D" id="Material_floor"]
 albedo_color = Color(0.2, 0.22, 0.26, 1)
@@ -78,42 +79,40 @@ script = ExtResource("2_cam_script")
 distance = 17.5
 pitch_deg = 48.0
 
-[node name="OutlineMaskViewport" type="SubViewport" parent="."]
+[node name="OutlineMaskViewport" type="SubViewport" parent="." unique_id=1233288007]
 unique_name_in_owner = true
 transparent_bg = true
 handle_input_locally = false
 gui_disable_input = true
-render_target_update_mode = 0
 size = Vector2i(1280, 720)
+render_target_update_mode = 0
 
-[node name="OutlineCamera" type="Camera3D" parent="OutlineMaskViewport"]
+[node name="OutlineCamera" type="Camera3D" parent="OutlineMaskViewport" unique_id=963175652]
 unique_name_in_owner = true
-current = true
 cull_mask = 2
+current = true
 
-[node name="OutlinePostCanvas" type="CanvasLayer" parent="."]
+[node name="OutlinePostCanvas" type="CanvasLayer" parent="." unique_id=1416937999]
 unique_name_in_owner = true
 layer = 3
 visible = false
 
-[node name="OutlineOverlay" type="TextureRect" parent="OutlinePostCanvas"]
+[node name="OutlineOverlay" type="TextureRect" parent="OutlinePostCanvas" unique_id=27014959]
 unique_name_in_owner = true
-layout_mode = 3
+texture_filter = 1
+material = SubResource("ShaderMaterial_outline")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture_filter = 1
-material = SubResource("ShaderMaterial_outline")
 
 [node name="OutlinePost" type="Node" parent="." unique_id=2069891179]
 script = ExtResource("5_outline_post")
 
 [node name="Floor" type="MeshInstance3D" parent="." unique_id=765049740]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
-layers = 1
 material_override = SubResource("Material_floor")
 mesh = SubResource("PlaneMesh_floor")
 
@@ -134,30 +133,6 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="UICanvas" type="CanvasLayer" parent="." unique_id=617327274]
-
-[node name="TurnOrderLayer" type="CanvasLayer" parent="."]
-layer = 4
-
-[node name="TopBar" type="MarginContainer" parent="TurnOrderLayer"]
-layout_mode = 3
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 72.0
-grow_horizontal = 2
-theme_override_constants/margin_top = 10
-
-[node name="CenterBar" type="CenterContainer" parent="TurnOrderLayer/TopBar"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="TurnOrderStrip" type="HBoxContainer" parent="TurnOrderLayer/TopBar/CenterBar"]
-unique_name_in_owner = true
-layout_mode = 2
-alignment = 1
 
 [node name="BattleHudRoot" type="Control" parent="UICanvas" unique_id=1995343000]
 unique_name_in_owner = true
@@ -210,7 +185,7 @@ theme_override_constants/separation = 6
 [node name="MessageFrame" type="PanelContainer" parent="UICanvas/BattleHudRoot/BottomHud" unique_id=1153952853]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 0
+size_flags_vertical = 10
 theme_override_styles/panel = SubResource("StyleBox_dialog")
 
 [node name="BattleMessageText" type="RichTextLabel" parent="UICanvas/BattleHudRoot/BottomHud/MessageFrame" unique_id=1486207075]
@@ -224,6 +199,24 @@ theme_override_font_sizes/normal_font_size = 17
 bbcode_enabled = true
 scroll_following = true
 autowrap_mode = 2
+
+[node name="TurnOrderLayer" type="CanvasLayer" parent="." unique_id=1864456896]
+layer = 4
+
+[node name="TopBar" type="MarginContainer" parent="TurnOrderLayer" unique_id=1207971586]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 72.0
+grow_horizontal = 2
+theme_override_constants/margin_top = 10
+
+[node name="CenterBar" type="CenterContainer" parent="TurnOrderLayer/TopBar" unique_id=1988070512]
+layout_mode = 2
+
+[node name="TurnOrderStrip" type="HBoxContainer" parent="TurnOrderLayer/TopBar/CenterBar" unique_id=1876152406]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
 
 [node name="TooltipLayer" type="CanvasLayer" parent="." unique_id=693115288]
 layer = 20

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="SkillData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://battle/skill_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"u1_slow"
+display_name = "粘液减速"
+focus_cost = 5
+power = 0
+hit_chance = 1.0
+cooldown_rounds = 0
+target_kind = 1
+deals_damage = false
+self_speed_delta = 0
+target_speed_delta = -6
