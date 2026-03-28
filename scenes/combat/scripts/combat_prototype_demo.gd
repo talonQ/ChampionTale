@@ -104,6 +104,7 @@ var _pick_phase: _PickPhase = _PickPhase.NONE
 var _pending_skill: SkillData
 var _highlight_actor: BattleUnitRuntime
 var _slots_by_unit_id: Dictionary = {}
+var _skill_target_pick_hover_id: int = -1
 
 
 func _ready() -> void:
@@ -147,6 +148,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_narration.process_frame(delta)
 	_bars.update_screen_positions(_state.units, _slots_by_unit_id)
+	_update_skill_target_pick_highlight()
 	_update_hover_tooltip()
 
 
@@ -369,6 +371,7 @@ func _on_enemy_target_pressed(target: BattleUnitRuntime) -> void:
 		return
 	if not target.is_alive() or target.is_player_side:
 		return
+	_set_skill_target_pick_highlight_id(-1)
 	_pick_phase = _PickPhase.NONE
 	var sk := _pending_skill
 	_pending_skill = null
@@ -392,6 +395,37 @@ func _finish_player_action() -> void:
 	if _check_battle_end():
 		return
 	call_deferred("_advance_battle")
+
+
+func _update_skill_target_pick_highlight() -> void:
+	if _pick_phase != _PickPhase.SKILL_TARGET:
+		_set_skill_target_pick_highlight_id(-1)
+		return
+	var hovered := get_viewport().gui_get_hovered_control()
+	if hovered != null and _is_descendant_of(hovered, _battle_hud_root):
+		_set_skill_target_pick_highlight_id(-1)
+		return
+	var mouse := get_viewport().get_mouse_position()
+	var w3d := get_viewport().get_world_3d()
+	var u := _CombatBattlePick.ray_pick_unit(mouse, _camera_3d, w3d)
+	if u == null or not u.is_alive() or u.is_player_side:
+		_set_skill_target_pick_highlight_id(-1)
+		return
+	_set_skill_target_pick_highlight_id(u.id)
+
+
+func _set_skill_target_pick_highlight_id(unit_id: int) -> void:
+	if unit_id == _skill_target_pick_hover_id:
+		return
+	if _skill_target_pick_hover_id != -1:
+		var old_slot: Variant = _slots_by_unit_id.get(_skill_target_pick_hover_id)
+		if old_slot != null and old_slot.has_method(&"set_skill_target_hover_highlight"):
+			old_slot.set_skill_target_hover_highlight(false)
+	_skill_target_pick_hover_id = unit_id
+	if unit_id != -1:
+		var new_slot: Variant = _slots_by_unit_id.get(unit_id)
+		if new_slot != null and new_slot.has_method(&"set_skill_target_hover_highlight"):
+			new_slot.set_skill_target_hover_highlight(true)
 
 
 func _update_hover_tooltip() -> void:

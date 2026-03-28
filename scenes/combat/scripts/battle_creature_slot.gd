@@ -6,6 +6,9 @@ extends Node3D
 const _ANIM_DRIVER_SCRIPT := preload("res://components/creature_animation_driver.gd")
 ## 主相机仅照第 1 层；描边开启时再打开第 2 层给 Outline 相机。
 const OUTLINE_RENDER_LAYER := 2
+## 技能目标选择悬停：与红色混合 albedo（仅处理 BaseMaterial3D / StandardMaterial3D 等）。
+const SKILL_TARGET_HOVER_RED := Color(1.0, 0.12, 0.1, 1.0)
+const SKILL_TARGET_HOVER_BLEND := 0.42
 
 var unit: BattleUnitRuntime
 ## CreatureAnimationDriver（components/creature_animation_driver.gd）
@@ -13,9 +16,12 @@ var _anim_driver: Node = null
 var _death_sequence_started: bool = false
 var _saved_rotation_deg: Vector3 = Vector3.ZERO
 var _facing_override_active: bool = false
+## { "mat": BaseMaterial3D, "base": Color }，duplicate 后的覆盖材质，避免改共享资源。
+var _skill_target_hover_entries: Array[Dictionary] = []
 
 
 func setup(p_unit: BattleUnitRuntime, visual_scene: PackedScene) -> void:
+	_skill_target_hover_entries.clear()
 	unit = p_unit
 	_set_outline_layer_on_meshes(false)
 	var proxy := get_node(^"PickProxy") as StaticBody3D
@@ -136,3 +142,31 @@ func _apply_dead_visual() -> void:
 
 func get_pick_body() -> StaticBody3D:
 	return get_node(^"PickProxy") as StaticBody3D
+
+
+## 技能单体目标选择时：合法目标悬停高亮（albedo 与红色 lerp）。
+func set_skill_target_hover_highlight(enabled: bool) -> void:
+	var vis := get_node_or_null(^"Visual") as Node3D
+	if vis == null:
+		return
+	if _skill_target_hover_entries.is_empty():
+		_skill_target_hover_capture_materials(vis)
+	for e in _skill_target_hover_entries:
+		var mat: BaseMaterial3D = e["mat"] as BaseMaterial3D
+		if mat == null:
+			continue
+		var base: Color = e["base"]
+		mat.albedo_color = base.lerp(SKILL_TARGET_HOVER_RED, SKILL_TARGET_HOVER_BLEND) if enabled else base
+
+
+func _skill_target_hover_capture_materials(vis: Node3D) -> void:
+	for mi in _collect_mesh_instances(vis):
+		var mesh := mi.mesh
+		if mesh == null:
+			continue
+		for si in range(mesh.get_surface_count()):
+			var src := mi.get_active_material(si)
+			if src is BaseMaterial3D:
+				var dup := (src as BaseMaterial3D).duplicate() as BaseMaterial3D
+				mi.set_surface_override_material(si, dup)
+				_skill_target_hover_entries.append({"mat": dup, "base": dup.albedo_color})
