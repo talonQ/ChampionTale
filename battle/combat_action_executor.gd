@@ -14,10 +14,16 @@ static func short_name(u: BattleUnitRuntime) -> String:
 	return n
 
 
-static func apply_rest(actor: BattleUnitRuntime, on_unit_changed: Callable) -> Array[String]:
+static func apply_rest(
+	actor: BattleUnitRuntime,
+	on_unit_changed: Callable,
+	on_turn_completed: Callable = Callable(),
+) -> Array[String]:
 	var before := actor.focus
 	actor.add_focus(REST_FOCUS_RECOVERY)
 	actor.acted_this_round = true
+	if on_turn_completed.is_valid():
+		on_turn_completed.call(actor)
 	if on_unit_changed.is_valid():
 		on_unit_changed.call(actor)
 	return [
@@ -31,12 +37,15 @@ static func apply_skill(
 	targets: Array[BattleUnitRuntime],
 	on_unit_changed: Callable,
 	on_after_caster_spent: Callable = Callable(),
+	on_turn_completed: Callable = Callable(),
 ) -> Array[String]:
 	var out: Array[String] = []
 	var opener := "%s 使出了 %s！" % [short_name(actor), skill.display_name]
 	if skill.target_kind == SkillData.TargetKind.SINGLE_ENEMY:
 		if targets.is_empty():
 			actor.acted_this_round = true
+			if on_turn_completed.is_valid():
+				on_turn_completed.call(actor)
 			return [opener + " 但没有可攻击的目标。"]
 	actor.spend_focus(skill.focus_cost)
 	if on_unit_changed.is_valid():
@@ -75,6 +84,8 @@ static func apply_skill(
 	if out.is_empty():
 		out.append(opener)
 	actor.acted_this_round = true
+	if on_turn_completed.is_valid():
+		on_turn_completed.call(actor)
 	return out
 
 
@@ -91,6 +102,7 @@ static func build_enemy_action_lines(
 	units: Array[BattleUnitRuntime],
 	on_unit_changed: Callable,
 	on_after_caster_spent: Callable = Callable(),
+	on_turn_completed: Callable = Callable(),
 ) -> PackedStringArray:
 	var candidates: Array[SkillData] = []
 	for s in actor.skills:
@@ -103,11 +115,15 @@ static func build_enemy_action_lines(
 		elif s.target_kind == SkillData.TargetKind.NONE:
 			candidates.append(s)
 	if candidates.is_empty():
-		return PackedStringArray(apply_rest(actor, on_unit_changed))
+		return PackedStringArray(apply_rest(actor, on_unit_changed, on_turn_completed))
 	candidates.sort_custom(func(a: SkillData, b: SkillData) -> bool: return a.power > b.power)
 	var skill: SkillData = candidates[0]
 	if skill.target_kind == SkillData.TargetKind.NONE:
-		return PackedStringArray(apply_skill(actor, skill, [], on_unit_changed, on_after_caster_spent))
+		return PackedStringArray(
+			apply_skill(actor, skill, [], on_unit_changed, on_after_caster_spent, on_turn_completed)
+		)
 	var pts := alive_player_side(units)
 	pts.sort_custom(func(a: BattleUnitRuntime, b: BattleUnitRuntime) -> bool: return a.hp < b.hp)
-	return PackedStringArray(apply_skill(actor, skill, [pts[0]], on_unit_changed, on_after_caster_spent))
+	return PackedStringArray(
+		apply_skill(actor, skill, [pts[0]], on_unit_changed, on_after_caster_spent, on_turn_completed)
+	)

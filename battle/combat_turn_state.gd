@@ -5,6 +5,8 @@ extends RefCounted
 
 var units: Array[BattleUnitRuntime] = []
 var round_number: int = 1
+## 本回合已出手顺序（仅 id，用于行动条 UI）；新回合在 tick_new_round 开头清空。
+var _completed_turn_ids: Array[int] = []
 
 
 func get_alive_units() -> Array[BattleUnitRuntime]:
@@ -43,7 +45,12 @@ func get_next_actor() -> BattleUnitRuntime:
 	return el[0]
 
 
+func note_turn_completed(unit: BattleUnitRuntime) -> void:
+	_completed_turn_ids.append(unit.id)
+
+
 func tick_new_round() -> void:
+	_completed_turn_ids.clear()
 	for u in units:
 		u.acted_this_round = false
 	for u in get_alive_units():
@@ -83,3 +90,49 @@ func is_all_player_dead() -> bool:
 
 func is_all_enemy_dead() -> bool:
 	return battle_outcome() == BattleOutcome.ALL_ENEMY_DEAD
+
+
+## 头顶行动条从左到右：先本回合已出手（时间顺序），再未出手单位按**当前有效速度**排序（同速用 id 稳定次序；与随机同速骰略有差异属正常）。
+func get_turn_order_strip_units() -> Array[BattleUnitRuntime]:
+	var alive := get_alive_units()
+	if alive.is_empty():
+		return []
+	var by_id: Dictionary = {}
+	for u in alive:
+		by_id[u.id] = u
+	var ordered: Array[BattleUnitRuntime] = []
+	var seen: Dictionary = {}
+	for tid in _completed_turn_ids:
+		var u: Variant = by_id.get(tid, null)
+		if u == null:
+			continue
+		var ru := u as BattleUnitRuntime
+		if not ru.is_alive():
+			continue
+		if seen.has(ru.id):
+			continue
+		ordered.append(ru)
+		seen[ru.id] = true
+	for u in _preview_remaining_unacted_by_speed():
+		if seen.has(u.id):
+			continue
+		ordered.append(u)
+		seen[u.id] = true
+	for u in alive:
+		if not seen.has(u.id):
+			ordered.append(u)
+	return ordered
+
+
+func _preview_remaining_unacted_by_speed() -> Array[BattleUnitRuntime]:
+	var pool: Array[BattleUnitRuntime] = []
+	for u in eligible_for_round():
+		pool.append(u)
+	pool.sort_custom(func(a: BattleUnitRuntime, b: BattleUnitRuntime) -> bool:
+		var sa := a.effective_spd()
+		var sb := b.effective_spd()
+		if sa != sb:
+			return sa > sb
+		return a.id > b.id
+	)
+	return pool

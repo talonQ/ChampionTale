@@ -17,6 +17,10 @@ extends Node
 @export_range(0, 16, 1) var unit_bar_row_separation: int = 1
 @export_range(0.0, 32.0, 0.5, "suffix:px") var unit_bar_screen_margin_px: float = 4.0
 
+@export_group("Turn order strip")
+@export_range(32, 96, 1, "suffix:px") var turn_order_icon_size: int = 44
+@export_range(0, 24, 1, "suffix:px") var turn_order_separation: int = 8
+
 @export_group("Battle data")
 ## 留空则使用 `battle/definitions/demo_encounter.tres`；可在检查器指定其它 CombatEncounterDefinition。
 @export var encounter: CombatEncounterDefinition
@@ -34,6 +38,18 @@ const _CombatNarrationController := preload("res://scenes/combat/scripts/combat_
 const _CombatUnitBarsController := preload("res://scenes/combat/scripts/combat_unit_bars_controller.gd")
 const _CombatBattlePick := preload("res://scenes/combat/scripts/combat_battle_pick.gd")
 const _CombatUnitTooltipText := preload("res://scenes/combat/scripts/combat_unit_tooltip_text.gd")
+const _CombatTurnOrderStrip := preload("res://scenes/combat/scripts/combat_turn_order_strip.gd")
+## 行动条圆圈内贴图（与 visual_lookup_id 对应）；由 `portrait.png`（自 WebP 转换）；缺项则用名字首字占位。
+const _STRIP_TEX_BY_VISUAL_ID: Dictionary = {
+	1: preload("res://assets/pokemon/khazix/portrait.png"),
+	2: preload("res://assets/pokemon/malphite/portrait.png"),
+	3: preload("res://assets/pokemon/hecarim/portrait.png"),
+	4: preload("res://assets/pokemon/fizz/portrait.png"),
+	5: preload("res://assets/pokemon/renekton/portrait.png"),
+	6: preload("res://assets/pokemon/trundle/portrait.png"),
+	7: preload("res://assets/pokemon/volibear/portrait.png"),
+	8: preload("res://assets/pokemon/wukong/portrait.png"),
+}
 const _VISUAL_BY_UNIT_ID := {
 	1: preload("res://assets/pokemon/khazix/avatar.tscn"),
 	2: preload("res://assets/pokemon/malphite/avatar.tscn"),
@@ -62,6 +78,7 @@ const _SLOT_POSITION := {
 @onready var _tooltip_text: RichTextLabel = %TooltipText
 @onready var _battle_hud_root: Control = %BattleHudRoot
 @onready var _unit_bars_root: Control = %UnitBarsRoot
+@onready var _turn_order_row: HBoxContainer = %TurnOrderStrip
 @onready var _camera_3d: Camera3D = %BattleCamera
 @onready var _battle_field: Node3D = %BattleField
 @onready var _outline_post: Node = $OutlinePost
@@ -69,6 +86,7 @@ const _SLOT_POSITION := {
 var _state = _CombatTurnState.new()
 var _narration
 var _bars
+var _turn_strip
 
 var units: Array[BattleUnitRuntime]:
 	get:
@@ -109,9 +127,11 @@ func _ready() -> void:
 	_bars.focus_bar_min_size = Vector2(unit_bar_focus_width, unit_bar_focus_height)
 	_bars.bars_vertical_separation = unit_bar_row_separation
 	_bars.screen_anchor_margin_px = unit_bar_screen_margin_px
+	_turn_strip = _CombatTurnOrderStrip.new(_turn_order_row, turn_order_icon_size, turn_order_separation)
 	_btn_rest.pressed.connect(_on_rest_pressed)
 	_spawn_3d_slots()
 	_bars.clear_and_rebuild(_state.units)
+	_refresh_turn_order_strip()
 	_set_actions_enabled(false)
 	_narration.start_chain(PackedStringArray(["战斗开始！"]), func() -> void:
 		call_deferred("_advance_battle")
@@ -126,6 +146,7 @@ func _process(delta: float) -> void:
 
 func _on_unit_stats_changed(u: BattleUnitRuntime) -> void:
 	_bars.sync_unit_values(u)
+	_refresh_turn_order_strip()
 
 
 func _notify_slot_skill_cast(actor: BattleUnitRuntime, skill: SkillData, targets: Array[BattleUnitRuntime]) -> void:
@@ -154,6 +175,26 @@ func _set_actions_enabled(on: bool) -> void:
 func _sync_ui_after_state() -> void:
 	_sync_3d_visuals()
 	_bars.sync_all_units(_state.units)
+	_refresh_turn_order_strip()
+
+
+func _refresh_turn_order_strip() -> void:
+	if _turn_strip == null:
+		return
+	_turn_strip.sync(
+		_state.get_turn_order_strip_units(),
+		_highlight_actor,
+		Callable(self, "_strip_portrait_for_unit"),
+	)
+
+
+func _strip_portrait_for_unit(u: BattleUnitRuntime) -> Texture2D:
+	var v: Variant = _STRIP_TEX_BY_VISUAL_ID.get(u.visual_lookup_id(), null)
+	return v as Texture2D
+
+
+func _on_turn_completed(actor: BattleUnitRuntime) -> void:
+	_state.note_turn_completed(actor)
 
 
 func _spawn_3d_slots() -> void:
@@ -216,6 +257,7 @@ func _advance_battle() -> void:
 		if _state.get_alive_units().is_empty():
 			return
 		_state.tick_new_round()
+		_refresh_turn_order_strip()
 		_narration.start_chain(PackedStringArray(["第 %d 回合！" % _state.round_number]), func() -> void:
 			call_deferred("_advance_battle")
 		)
@@ -240,6 +282,7 @@ func _advance_battle() -> void:
 					_state.units,
 					_on_unit_stats_changed,
 					_notify_slot_skill_cast,
+					Callable(self, "_on_turn_completed"),
 				)
 				_narration.start_chain(lines, func() -> void:
 					_busy = false
@@ -280,7 +323,9 @@ func _on_rest_pressed() -> void:
 	if _busy or _narration.is_narration_busy() or _player_actor == null:
 		return
 	_set_actions_enabled(false)
-	var lines := _CombatActionExecutor.apply_rest(_player_actor, _on_unit_stats_changed)
+	var lines := _CombatActionExecutor.apply_rest(
+		_player_actor, _on_unit_stats_changed, Callable(self, "_on_turn_completed")
+	)
 	_narration.start_chain(PackedStringArray(lines), func() -> void:
 		_finish_player_action()
 	)
@@ -292,7 +337,12 @@ func _on_skill_button_pressed(skill: SkillData) -> void:
 	if skill.target_kind == SkillData.TargetKind.NONE:
 		_set_actions_enabled(false)
 		var lines := _CombatActionExecutor.apply_skill(
-			_player_actor, skill, [], _on_unit_stats_changed, _notify_slot_skill_cast
+			_player_actor,
+			skill,
+			[],
+			_on_unit_stats_changed,
+			_notify_slot_skill_cast,
+			Callable(self, "_on_turn_completed"),
 		)
 		_narration.start_chain(PackedStringArray(lines), func() -> void:
 			_finish_player_action()
@@ -317,7 +367,12 @@ func _on_enemy_target_pressed(target: BattleUnitRuntime) -> void:
 	var sk := _pending_skill
 	_pending_skill = null
 	var lines := _CombatActionExecutor.apply_skill(
-		_player_actor, sk, [target], _on_unit_stats_changed, _notify_slot_skill_cast
+		_player_actor,
+		sk,
+		[target],
+		_on_unit_stats_changed,
+		_notify_slot_skill_cast,
+		Callable(self, "_on_turn_completed"),
 	)
 	_narration.start_chain(PackedStringArray(lines), func() -> void:
 		_finish_player_action()
