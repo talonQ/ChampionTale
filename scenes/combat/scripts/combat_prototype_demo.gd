@@ -1,14 +1,21 @@
 extends Node
 ## 战斗原型场景根节点：串联 **CombatTurnState（规则）** 与 **表现层控制器**（台词、条、3D 槽位）。
 
-const BAR_OFFSET_WORLD_Y := 2.15
-
 @export_group("Battle text (typewriter)")
 @export_range(4.0, 120.0, 1.0, "suffix:字/秒") var battle_text_chars_per_second: float = 18.0
 @export_range(0.0, 5.0, 0.05, "suffix:s") var battle_text_read_pause_sec: float = 1.5
 
 @export_group("Unit bars")
 @export_range(0.0, 3.0, 0.05, "suffix:s") var unit_bar_tween_duration_sec: float = 0.45
+@export_range(0.5, 8.0, 0.05, "suffix:m") var unit_bar_world_offset_y: float = 2.15
+@export_range(48.0, 220.0, 1.0, "suffix:px") var unit_bar_panel_min_width: float = 70.0
+@export_range(24.0, 100.0, 1.0, "suffix:px") var unit_bar_panel_min_height: float = 16.0
+@export_range(48.0, 220.0, 1.0, "suffix:px") var unit_bar_hp_width: float = 40.0
+@export_range(6.0, 28.0, 0.5, "suffix:px") var unit_bar_hp_height: float = 5.0
+@export_range(48.0, 220.0, 1.0, "suffix:px") var unit_bar_focus_width: float = 40.0
+@export_range(6.0, 24.0, 0.5, "suffix:px") var unit_bar_focus_height: float = 3.0
+@export_range(0, 16, 1) var unit_bar_row_separation: int = 1
+@export_range(0.0, 32.0, 0.5, "suffix:px") var unit_bar_screen_margin_px: float = 4.0
 
 @export_group("Battle data")
 ## 留空则使用 `battle/definitions/demo_encounter.tres`；可在检查器指定其它 CombatEncounterDefinition。
@@ -95,8 +102,13 @@ func _ready() -> void:
 	_narration.chars_per_second = battle_text_chars_per_second
 	_narration.read_pause_after_line_sec = battle_text_read_pause_sec
 	_bars = _CombatUnitBarsController.new(_unit_bars_root, _camera_3d)
-	_bars.bar_offset_world_y = BAR_OFFSET_WORLD_Y
+	_bars.bar_offset_world_y = unit_bar_world_offset_y
 	_bars.tween_duration_sec = unit_bar_tween_duration_sec
+	_bars.panel_min_size = Vector2(unit_bar_panel_min_width, unit_bar_panel_min_height)
+	_bars.hp_bar_min_size = Vector2(unit_bar_hp_width, unit_bar_hp_height)
+	_bars.focus_bar_min_size = Vector2(unit_bar_focus_width, unit_bar_focus_height)
+	_bars.bars_vertical_separation = unit_bar_row_separation
+	_bars.screen_anchor_margin_px = unit_bar_screen_margin_px
 	_btn_rest.pressed.connect(_on_rest_pressed)
 	_spawn_3d_slots()
 	_bars.clear_and_rebuild(_state.units)
