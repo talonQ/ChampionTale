@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://bkhazixavatar01"]
-
-[ext_resource type="PackedScene" uid="uid://b21byc8cdy26x" path="res://assets/kha'zix.glb" id="1_glb"]
-
-[node name="KhazixAvatar" type="Node3D"]
-
-[node name="Art" parent="." instance=ExtResource("1_glb")]
-transform = Transform3D(0.014, 0, 0, 0, 0.014, 0, 0, 0, 0.014, 0, 0, 0)

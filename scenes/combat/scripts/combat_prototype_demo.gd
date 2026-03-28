@@ -10,6 +10,15 @@ const BAR_OFFSET_WORLD_Y := 2.15
 @export_group("Unit bars")
 @export_range(0.0, 3.0, 0.05, "suffix:s") var unit_bar_tween_duration_sec: float = 0.45
 
+@export_group("Battle data")
+## 留空则使用 `battle/definitions/demo_encounter.tres`；可在检查器指定其它 CombatEncounterDefinition。
+@export var encounter: CombatEncounterDefinition
+## 开启后从 `random_pool.unit_pool` 无放回抽取（先填满己方 1、2，再填敌方 3、4）。
+@export var use_random_roster: bool = false
+@export var random_pool: CombatRandomPoolDefinition
+## 非负时固定种子便于复现；负值则每次开局随机。
+@export var random_seed: int = -1
+
 const _SLOT_SCENE := preload("res://scenes/combat/battle_creature_slot.tscn")
 const _CombatTurnState := preload("res://battle/combat_turn_state.gd")
 const _CombatDemoRoster := preload("res://battle/combat_demo_roster.gd")
@@ -19,10 +28,14 @@ const _CombatUnitBarsController := preload("res://scenes/combat/scripts/combat_u
 const _CombatBattlePick := preload("res://scenes/combat/scripts/combat_battle_pick.gd")
 const _CombatUnitTooltipText := preload("res://scenes/combat/scripts/combat_unit_tooltip_text.gd")
 const _VISUAL_BY_UNIT_ID := {
-	1: preload("res://assets/pokemon/khazix_avatar.tscn"),
-	2: preload("res://assets/pokemon/malphite_avatar.tscn"),
-	3: preload("res://assets/pokemon/hecarim_avatar.tscn"),
-	4: preload("res://assets/pokemon/fizz_avatar.tscn"),
+	1: preload("res://assets/pokemon/khazix/avatar.tscn"),
+	2: preload("res://assets/pokemon/malphite/avatar.tscn"),
+	3: preload("res://assets/pokemon/hecarim/avatar.tscn"),
+	4: preload("res://assets/pokemon/fizz/avatar.tscn"),
+	5: preload("res://assets/pokemon/renekton/avatar.tscn"),
+	6: preload("res://assets/pokemon/trundle/avatar.tscn"),
+	7: preload("res://assets/pokemon/volibear/avatar.tscn"),
+	8: preload("res://assets/pokemon/wukong/avatar.tscn"),
 }
 const _SLOT_POSITION := {
 	1: Vector3(-2.2, 0, 3.5),
@@ -66,7 +79,15 @@ var _slots_by_unit_id: Dictionary = {}
 
 func _ready() -> void:
 	_battle_message.bbcode_enabled = false
-	_state.units = _CombatDemoRoster.create_units()
+	var rng := RandomNumberGenerator.new()
+	if random_seed >= 0:
+		rng.seed = random_seed
+	else:
+		rng.randomize()
+	if use_random_roster and random_pool != null:
+		_state.units = _CombatDemoRoster.create_units_from_random_pool(random_pool, rng)
+	else:
+		_state.units = _CombatDemoRoster.create_units(encounter)
 	_narration = _CombatNarrationController.new(_battle_message)
 	_narration.chars_per_second = battle_text_chars_per_second
 	_narration.read_pause_after_line_sec = battle_text_read_pause_sec
@@ -127,7 +148,7 @@ func _spawn_3d_slots() -> void:
 	for u in _state.units:
 		var slot: Node3D = _SLOT_SCENE.instantiate()
 		_battle_field.add_child(slot)
-		var vis: PackedScene = _VISUAL_BY_UNIT_ID.get(u.id, null)
+		var vis: PackedScene = _VISUAL_BY_UNIT_ID.get(u.visual_lookup_id(), null)
 		slot.setup(u, vis)
 		slot.position = _SLOT_POSITION.get(u.id, Vector3.ZERO)
 		if u.is_player_side:

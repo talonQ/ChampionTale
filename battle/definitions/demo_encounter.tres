@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CombatEncounterDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://battle/combat_encounter_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://battle/definitions/units/khazix.tres" id="2"]
+[ext_resource type="Resource" path="res://battle/definitions/units/malphite.tres" id="3"]
+[ext_resource type="Resource" path="res://battle/definitions/units/hecarim.tres" id="4"]
+[ext_resource type="Resource" path="res://battle/definitions/units/fizz.tres" id="5"]
+
+[resource]
+script = ExtResource("1")
+roster = [ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5")]

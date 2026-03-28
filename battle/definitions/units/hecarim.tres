@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="BattleUnitDefinition" format=3 uid="uid://dq0l36g1np4wu"]
+
+[ext_resource type="Script" uid="uid://cgbebaj7wkqb6" path="res://battle/battle_unit_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://battle/definitions/skills/u3_q.tres" id="2"]
+[ext_resource type="Script" uid="uid://b1gilu06gqybx" path="res://battle/skill_data.gd" id="2_kos2a"]
+[ext_resource type="Resource" path="res://battle/definitions/skills/u3_w.tres" id="3"]
+
+[resource]
+script = ExtResource("1")
+unit_id = 3
+is_player_side = false
+display_name = "赫卡里姆"
+level = 6
+hp_max = 88
+atk_base = 13
+def_base = 8
+spd_base = 15
+focus_max = 36
+skills = Array[ExtResource("2_kos2a")]([ExtResource("2"), ExtResource("3")])

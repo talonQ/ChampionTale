@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="BattleUnitDefinition" format=3 uid="uid://bgl8tuokgue2m"]
+
+[ext_resource type="Script" uid="uid://cgbebaj7wkqb6" path="res://battle/battle_unit_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://battle/definitions/skills/u4_q.tres" id="2"]
+[ext_resource type="Script" uid="uid://b1gilu06gqybx" path="res://battle/skill_data.gd" id="2_mrndw"]
+[ext_resource type="Resource" path="res://battle/definitions/skills/u4_w.tres" id="3"]
+
+[resource]
+script = ExtResource("1")
+unit_id = 4
+is_player_side = false
+display_name = "菲兹"
+level = 6
+hp_max = 68
+atk_base = 12
+def_base = 7
+spd_base = 16
+focus_max = 38
+skills = Array[ExtResource("2_mrndw")]([ExtResource("2"), ExtResource("3")])

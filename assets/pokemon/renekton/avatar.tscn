@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://bpxpkavatar005"]
+
+[ext_resource type="PackedScene" uid="uid://b3n87fof8dvli" path="res://assets/pokemon/renekton/renekton.glb" id="1_glb"]
+
+[node name="RenektonAvatar" type="Node3D"]
+
+[node name="Art" parent="." instance=ExtResource("1_glb")]
+transform = Transform3D(0.014, 0, 0, 0, 0.014, 0, 0, 0, 0.014, 0, 0, 0)

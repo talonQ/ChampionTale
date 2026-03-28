@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="BattleUnitDefinition" format=3 uid="uid://ca10qmvraaf4o"]
+
+[ext_resource type="Script" uid="uid://cgbebaj7wkqb6" path="res://battle/battle_unit_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://battle/definitions/skills/u1_q.tres" id="2"]
+[ext_resource type="Script" uid="uid://b1gilu06gqybx" path="res://battle/skill_data.gd" id="2_v2lb0"]
+[ext_resource type="Resource" path="res://battle/definitions/skills/u1_w.tres" id="3"]
+[ext_resource type="Resource" path="res://battle/definitions/skills/u1_e.tres" id="4"]
+
+[resource]
+script = ExtResource("1")
+display_name = "卡兹克"
+level = 6
+hp_max = 72
+atk_base = 14
+def_base = 6
+spd_base = 18
+focus_max = 40
+skills = Array[ExtResource("2_v2lb0")]([ExtResource("2"), ExtResource("3"), ExtResource("4")])

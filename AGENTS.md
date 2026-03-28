@@ -46,7 +46,7 @@
 ## 5. 参数与数据
 
 - 手感相关数值（打字速度、播完停顿、条 tween 时长等）用 **`@export_group` + `@export_range`**，便于在检查器迭代，避免魔法数散落在脚本深处。
-- 原型关卡单位与技能配置集中放在独立模块（如 `CombatDemoRoster`）；后续可替换为 **Resource / 外部表**，尽量少改流程代码。
+- 参战列表与单位数值使用 **`CombatEncounterDefinition` + `BattleUnitDefinition`（`.tres`）**，放在 `battle/definitions/`；`CombatDemoRoster.create_units(encounter)` 转为运行时单位。技能为独立 **`SkillData` .tres**，由单位资源引用复用。
 
 ---
 

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="BattleUnitDefinition" format=3 uid="uid://ck16ddk8bw3uv"]
+
+[ext_resource type="Script" uid="uid://cgbebaj7wkqb6" path="res://battle/battle_unit_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://battle/definitions/skills/u2_q.tres" id="2"]
+[ext_resource type="Script" uid="uid://b1gilu06gqybx" path="res://battle/skill_data.gd" id="2_034bw"]
+[ext_resource type="Resource" path="res://battle/definitions/skills/u2_w.tres" id="3"]
+[ext_resource type="Resource" path="res://battle/definitions/skills/u2_e.tres" id="4"]
+
+[resource]
+script = ExtResource("1")
+unit_id = 2
+display_name = "墨菲特"
+level = 6
+hp_max = 110
+def_base = 14
+spd_base = 8
+focus_max = 32
+skills = Array[ExtResource("2_034bw")]([ExtResource("2"), ExtResource("3"), ExtResource("4")])

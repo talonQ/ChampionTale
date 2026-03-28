@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://bpxpkavatar006"]
+
+[ext_resource type="PackedScene" uid="uid://dt1hpja383tn4" path="res://assets/pokemon/trundle/trundle.glb" id="1_glb"]
+
+[node name="TrundleAvatar" type="Node3D"]
+
+[node name="Art" parent="." instance=ExtResource("1_glb")]
+transform = Transform3D(0.014, 0, 0, 0, 0.014, 0, 0, 0, 0.014, 0, 0, 0)

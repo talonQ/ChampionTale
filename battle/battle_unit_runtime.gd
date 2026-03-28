@@ -2,6 +2,8 @@ class_name BattleUnitRuntime
 extends RefCounted
 
 var id: int = 0
+## 与 `_VISUAL_BY_UNIT_ID` 对应；≤0 时用 `id`（固定遭遇与旧数据兼容）。
+var visual_asset_id: int = 0
 var is_player_side: bool = true
 var display_name: String = "Unit"
 var level: int = 1
@@ -27,6 +29,10 @@ var acted_this_round: bool = false
 
 ## 同速重排时使用的临时随机键，由战斗控制器每轮写入。
 var sort_tiebreak: float = 0.0
+
+
+func visual_lookup_id() -> int:
+	return visual_asset_id if visual_asset_id > 0 else id
 
 
 func is_alive() -> bool:

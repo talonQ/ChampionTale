@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="SkillData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://battle/skill_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"u3_q"
+display_name = "暴走挥砍"
+focus_cost = 7
+power = 11
+hit_chance = 0.9
+cooldown_rounds = 0
+target_kind = 1
+self_speed_delta = 0
