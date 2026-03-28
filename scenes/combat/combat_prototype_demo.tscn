@@ -27,7 +27,7 @@ size = Vector2(26, 16)
 
 [node name="CombatPrototypeDemo" type="Node" unique_id=1998837020]
 script = ExtResource("1_script")
-battle_text_chars_per_second = 20.0
+battle_text_chars_per_second = 8.0
 battle_text_read_pause_sec = 0.5
 unit_bar_tween_duration_sec = 1.2
 encounter = ExtResource("3_demo_encounter")

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="SkillData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://battle/skill_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"common_vision_focus"
+display_name = "视界专注"
+description = "将意念导向一名同伴（或自己），使其恢复相当于最大专注一半的量。"
+focus_cost = 8
+power = 0
+hit_chance = 1.0
+cooldown_rounds = 0
+target_kind = 2
+deals_damage = false
+restore_target_focus_max_fraction = 0.5

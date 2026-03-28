@@ -1,9 +1,12 @@
-[gd_resource type="Resource" script_class="BattleUnitDefinition" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="BattleUnitDefinition" format=3 uid="uid://tqun4hqxrp21"]
 
-[ext_resource type="Script" path="res://battle/battle_unit_definition.gd" id="1"]
-[ext_resource type="Resource" path="res://battle/definitions/skills/u3_q.tres" id="2"]
-[ext_resource type="Script" path="res://battle/skill_data.gd" id="2_sd"]
-[ext_resource type="Resource" path="res://battle/definitions/skills/u3_w.tres" id="3"]
+[ext_resource type="Script" uid="uid://cgbebaj7wkqb6" path="res://battle/battle_unit_definition.gd" id="1"]
+[ext_resource type="Resource" uid="uid://dwaafuh33fyl2" path="res://battle/definitions/skills/u3_q.tres" id="2"]
+[ext_resource type="Script" uid="uid://b1gilu06gqybx" path="res://battle/skill_data.gd" id="2_sd"]
+[ext_resource type="Resource" uid="uid://31cqkuqpkdip" path="res://battle/definitions/skills/u3_w.tres" id="3"]
+[ext_resource type="Resource" path="res://battle/definitions/skills/common_self_heal_50.tres" id="4"]
+[ext_resource type="Resource" path="res://battle/definitions/skills/common_haste.tres" id="5"]
+[ext_resource type="Resource" path="res://battle/definitions/skills/common_vision_focus.tres" id="6"]
 
 [resource]
 script = ExtResource("1")
@@ -17,4 +20,4 @@ atk_base = 14
 def_base = 9
 spd_base = 12
 focus_max = 34
-learnable_skills = Array[ExtResource("2_sd")]([ExtResource("2"), ExtResource("3")])
+learnable_skills = Array[ExtResource("2_sd")]([ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6")])

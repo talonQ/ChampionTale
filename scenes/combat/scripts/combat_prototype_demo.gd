@@ -174,7 +174,13 @@ func _notify_slot_skill_cast(actor: BattleUnitRuntime, skill: SkillData, targets
 	var slot: Variant = _slots_by_unit_id.get(actor.id)
 	if slot == null or not slot.has_method("notify_skill_cast"):
 		return
-	if skill.target_kind == SkillData.TargetKind.SINGLE_ENEMY and not targets.is_empty():
+	if (
+		(
+			skill.target_kind == SkillData.TargetKind.SINGLE_ENEMY
+			or skill.target_kind == SkillData.TargetKind.SINGLE_ALLY
+		)
+		and not targets.is_empty()
+	):
 		var target_slot: Variant = _slots_by_unit_id.get(targets[0].id)
 		if target_slot is Node3D:
 			slot.notify_skill_cast((target_slot as Node3D).global_position)
@@ -379,16 +385,34 @@ func _on_skill_button_pressed(skill: SkillData) -> void:
 			func() -> void:
 				_pick_phase = _PickPhase.SKILL_TARGET
 		)
+		return
+	if skill.target_kind == SkillData.TargetKind.SINGLE_ALLY:
+		_pending_skill = skill
+		_set_actions_enabled(false)
+		_narration.start_chain(
+			PackedStringArray(["选择 %s 的目标：点击场上的己方宝可梦（可选自己）。" % skill.display_name]),
+			func() -> void:
+				_pick_phase = _PickPhase.SKILL_TARGET
+		)
+		return
 
 
-func _on_enemy_target_pressed(target: BattleUnitRuntime) -> void:
+func _on_skill_target_pressed(target: BattleUnitRuntime) -> void:
 	if _busy or _narration.is_narration_busy() or _pick_phase != _PickPhase.SKILL_TARGET or _pending_skill == null or _player_actor == null:
 		return
-	if not target.is_alive() or target.is_player_side:
+	if not target.is_alive():
+		return
+	var sk := _pending_skill
+	if sk.target_kind == SkillData.TargetKind.SINGLE_ENEMY:
+		if target.is_player_side:
+			return
+	elif sk.target_kind == SkillData.TargetKind.SINGLE_ALLY:
+		if target.is_player_side != _player_actor.is_player_side:
+			return
+	else:
 		return
 	_set_skill_target_pick_highlight_id(-1)
 	_pick_phase = _PickPhase.NONE
-	var sk := _pending_skill
 	_pending_skill = null
 	var lines := _CombatActionExecutor.apply_skill(
 		_player_actor,
@@ -413,7 +437,7 @@ func _finish_player_action() -> void:
 
 
 func _update_skill_target_pick_highlight() -> void:
-	if _pick_phase != _PickPhase.SKILL_TARGET:
+	if _pick_phase != _PickPhase.SKILL_TARGET or _pending_skill == null or _player_actor == null:
 		_set_skill_target_pick_highlight_id(-1)
 		return
 	var hovered := get_viewport().gui_get_hovered_control()
@@ -423,7 +447,16 @@ func _update_skill_target_pick_highlight() -> void:
 	var mouse := get_viewport().get_mouse_position()
 	var w3d := get_viewport().get_world_3d()
 	var u := _CombatBattlePick.ray_pick_unit(mouse, _camera_3d, w3d)
-	if u == null or not u.is_alive() or u.is_player_side:
+	if u == null or not u.is_alive():
+		_set_skill_target_pick_highlight_id(-1)
+		return
+	var pk := _pending_skill
+	var ok := false
+	if pk.target_kind == SkillData.TargetKind.SINGLE_ENEMY:
+		ok = not u.is_player_side
+	elif pk.target_kind == SkillData.TargetKind.SINGLE_ALLY:
+		ok = u.is_player_side == _player_actor.is_player_side
+	if not ok:
 		_set_skill_target_pick_highlight_id(-1)
 		return
 	_set_skill_target_pick_highlight_id(u.id)
@@ -528,9 +561,17 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	var w3d := get_viewport().get_world_3d()
 	var picked := _CombatBattlePick.ray_pick_unit(mb.position, _camera_3d, w3d)
-	if picked and not picked.is_player_side and picked.is_alive():
+	if picked == null or not picked.is_alive() or _pending_skill == null or _player_actor == null:
+		return
+	var psk := _pending_skill
+	var accept := false
+	if psk.target_kind == SkillData.TargetKind.SINGLE_ENEMY:
+		accept = not picked.is_player_side
+	elif psk.target_kind == SkillData.TargetKind.SINGLE_ALLY:
+		accept = picked.is_player_side == _player_actor.is_player_side
+	if accept:
 		get_viewport().set_input_as_handled()
-		_on_enemy_target_pressed(picked)
+		_on_skill_target_pressed(picked)
 
 
 func debug_peek_next_actor() -> BattleUnitRuntime:

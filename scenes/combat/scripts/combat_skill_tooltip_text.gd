@@ -21,11 +21,23 @@ static func format_skill_bbcode(skill: SkillData, actor: BattleUnitRuntime) -> S
 	var tgt := "单体敌方"
 	if skill.target_kind == SkillData.TargetKind.NONE:
 		tgt = "自身 / 无目标"
+	elif skill.target_kind == SkillData.TargetKind.SINGLE_ALLY:
+		tgt = "单体友方（含自身）"
 	lines.append("目标：%s" % tgt)
 	if skill.deals_damage:
 		lines.append("威力：[b]%d[/b]" % skill.power)
 	else:
 		lines.append("威力：—（不造成伤害）")
+	if skill.heal_self_max_hp_fraction > 0.0:
+		lines.append(
+			"回复生命：最大生命值的 [b]%d%%[/b]"
+			% int(round(skill.heal_self_max_hp_fraction * 100.0))
+		)
+	if skill.restore_target_focus_max_fraction > 0.0:
+		lines.append(
+			"回复专注：目标最大专注的 [b]%d%%[/b]"
+			% int(round(skill.restore_target_focus_max_fraction * 100.0))
+		)
 	lines.append("专注消耗：[b]%d[/b]" % skill.focus_cost)
 	lines.append("命中：%d%%" % int(round(skill.hit_chance * 100.0)))
 	if skill.cooldown_rounds > 0:
