@@ -71,6 +71,8 @@ const _SLOT_POSITION := {
 	5: Vector3(0, 0, -3.5),
 	6: Vector3(3.6, 0, -3.5),
 }
+const SCENE_MAIN_MENU := "res://scenes/ui/main_menu.tscn"
+const _SCENE_MAIN_MENU := "res://scenes/ui/main_menu.tscn"
 
 @onready var _battle_message: RichTextLabel = %BattleMessageText
 @onready var _btn_rest: Button = %BtnRest
@@ -84,6 +86,10 @@ const _SLOT_POSITION := {
 @onready var _camera_3d: Camera3D = %BattleCamera
 @onready var _battle_field: Node3D = %BattleField
 @onready var _outline_post: Node = $OutlinePost
+@onready var _battle_result_layer: CanvasLayer = %BattleResultLayer
+@onready var _battle_result_title: Label = %BattleResultTitle
+@onready var _battle_result_subtitle: Label = %BattleResultSubtitle
+@onready var _battle_result_return: Button = %BattleResultReturnBtn
 
 var _state = _CombatTurnState.new()
 var _narration
@@ -106,10 +112,14 @@ var _pending_skill: SkillData
 var _highlight_actor: BattleUnitRuntime
 var _slots_by_unit_id: Dictionary = {}
 var _skill_target_pick_hover_id: int = -1
+var _scene_transition: ChampionSceneTransition
+## 为 true 时 Tooltip 放在指针左侧（右侧技能栏），避免挡住按钮。
+var _battle_tooltip_place_left: bool = false
 
 
 func _ready() -> void:
 	_battle_message.bbcode_enabled = false
+	_scene_transition = get_tree().root.get_node_or_null("SceneTransition") as ChampionSceneTransition
 	_apply_battle_ui_theme()
 	var rng := RandomNumberGenerator.new()
 	if random_seed >= 0:
@@ -145,6 +155,11 @@ func _ready() -> void:
 	_narration.start_chain(PackedStringArray(["战斗开始！"]), func() -> void:
 		call_deferred("_advance_battle")
 	)
+	_battle_result_layer.visible = false
+	_battle_result_return.pressed.connect(_on_battle_result_return_pressed)
+	var result_panel := _battle_result_layer.get_node_or_null(^"Center/Panel") as PanelContainer
+	if result_panel != null:
+		result_panel.theme = _BattleUiTheme.build()
 
 
 func _apply_battle_ui_theme() -> void:
@@ -266,11 +281,28 @@ func _check_battle_end() -> bool:
 	_set_actions_enabled(false)
 	_highlight_actor = null
 	_sync_ui_after_state()
-	if _state.is_all_player_dead():
-		_narration.start_chain(PackedStringArray(["己方失去了战斗能力……"]), Callable())
-	else:
-		_narration.start_chain(PackedStringArray(["敌方全部倒下了！战斗胜利！"]), Callable())
+	var won := not _state.is_all_player_dead()
+	var msg := "敌方全部倒下了！战斗胜利！" if won else "己方失去了战斗能力……"
+	_narration.start_chain(
+		PackedStringArray([msg]),
+		func() -> void:
+			_show_battle_result_overlay(won)
+	)
 	return true
+
+
+func _show_battle_result_overlay(won: bool) -> void:
+	_battle_result_title.text = "胜利" if won else "失败"
+	_battle_result_subtitle.text = "你赢得了这场战斗。" if won else "我方全员无法战斗。"
+	_battle_result_layer.visible = true
+	_busy = true
+
+
+func _on_battle_result_return_pressed() -> void:
+	if _scene_transition != null:
+		_scene_transition.fade_to_scene(SCENE_MAIN_MENU)
+	else:
+		get_tree().change_scene_to_file(SCENE_MAIN_MENU)
 
 
 func _advance_battle() -> void:
@@ -382,8 +414,8 @@ func _on_skill_button_pressed(skill: SkillData) -> void:
 		_set_actions_enabled(false)
 		_narration.start_chain(
 			PackedStringArray(["选择 %s 的目标：点击场上的敌方宝可梦。" % skill.display_name]),
-			func() -> void:
-				_pick_phase = _PickPhase.SKILL_TARGET
+			func() -> void: _pick_phase = _PickPhase.SKILL_TARGET,
+			0.0,
 		)
 		return
 	if skill.target_kind == SkillData.TargetKind.SINGLE_ALLY:
@@ -391,8 +423,8 @@ func _on_skill_button_pressed(skill: SkillData) -> void:
 		_set_actions_enabled(false)
 		_narration.start_chain(
 			PackedStringArray(["选择 %s 的目标：点击场上的己方宝可梦（可选自己）。" % skill.display_name]),
-			func() -> void:
-				_pick_phase = _PickPhase.SKILL_TARGET
+			func() -> void: _pick_phase = _PickPhase.SKILL_TARGET,
+			0.0,
 		)
 		return
 
@@ -490,6 +522,7 @@ func _update_hover_tooltip() -> void:
 			if hud_tip.is_empty():
 				_battle_tooltip.visible = false
 				return
+			_battle_tooltip_place_left = _is_descendant_of(hovered, _right_action_dock)
 			_tooltip_text.clear()
 			_tooltip_text.append_text(hud_tip)
 			_battle_tooltip.visible = true
@@ -501,6 +534,7 @@ func _update_hover_tooltip() -> void:
 	if u == null or not u.is_alive():
 		_battle_tooltip.visible = false
 		return
+	_battle_tooltip_place_left = false
 	_tooltip_text.clear()
 	_tooltip_text.append_text(_CombatUnitTooltipText.format_bbcode(u))
 	_battle_tooltip.visible = true
@@ -509,10 +543,17 @@ func _update_hover_tooltip() -> void:
 
 
 func _place_battle_tooltip(mouse: Vector2) -> void:
-	var pad := Vector2(14, 14)
 	var psz: Vector2 = _battle_tooltip.size
 	var vp := get_viewport().get_visible_rect().size
-	var pos := mouse + pad
+	var pos: Vector2
+	if _battle_tooltip_place_left:
+		var gap_x := 24.0
+		var gap_y := 8.0
+		pos.x = mouse.x - psz.x - gap_x
+		pos.y = mouse.y - psz.y * 0.35 - gap_y
+	else:
+		var pad := Vector2(14, 14)
+		pos = mouse + pad
 	pos.x = clampf(pos.x, 6.0, maxf(6.0, vp.x - psz.x - 6.0))
 	pos.y = clampf(pos.y, 6.0, maxf(6.0, vp.y - psz.y - 6.0))
 	_battle_tooltip.position = pos

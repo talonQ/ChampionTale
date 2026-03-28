@@ -27,8 +27,8 @@ size = Vector2(26, 16)
 
 [node name="CombatPrototypeDemo" type="Node" unique_id=1998837020]
 script = ExtResource("1_script")
-battle_text_chars_per_second = 8.0
-battle_text_read_pause_sec = 0.5
+battle_text_chars_per_second = 24.0
+battle_text_read_pause_sec = 1.8
 unit_bar_tween_duration_sec = 1.2
 encounter = ExtResource("3_demo_encounter")
 use_random_roster = true
@@ -213,3 +213,52 @@ bbcode_enabled = true
 fit_content = true
 scroll_active = false
 autowrap_mode = 2
+
+[node name="BattleResultLayer" type="CanvasLayer" parent="." unique_id=88110001]
+unique_name_in_owner = true
+layer = 30
+visible = false
+
+[node name="Dim" type="ColorRect" parent="BattleResultLayer" unique_id=88110002]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.04, 0.08, 0.78)
+
+[node name="Center" type="CenterContainer" parent="BattleResultLayer" unique_id=88110003]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Panel" type="PanelContainer" parent="BattleResultLayer/Center" unique_id=88110004]
+custom_minimum_size = Vector2(420, 0)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="BattleResultLayer/Center/Panel" unique_id=88110005]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="BattleResultTitle" type="Label" parent="BattleResultLayer/Center/Panel/VBox" unique_id=88110006]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 44
+text = "胜利"
+horizontal_alignment = 1
+
+[node name="BattleResultSubtitle" type="Label" parent="BattleResultLayer/Center/Panel/VBox" unique_id=88110007]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.78, 0.86, 1)
+theme_override_font_sizes/font_size = 16
+text = "战斗已结束。"
+horizontal_alignment = 1
+
+[node name="BattleResultReturnBtn" type="Button" parent="BattleResultLayer/Center/Panel/VBox" unique_id=88110008]
+unique_name_in_owner = true
+layout_mode = 2
+text = "返回主界面"

@@ -11,9 +11,14 @@ config_version=5
 [application]
 
 config/name="ChampionTale"
-run/main_scene="res://scenes/combat/combat_prototype_demo.tscn"
+run/main_scene="res://scenes/ui/main_menu.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+WindowSettings="*res://scenes/ui/window_settings_service.gd"
+SceneTransition="*res://scenes/ui/scene_transition.gd"
 
 [physics]
 

@@ -1,0 +1,103 @@
+[gd_scene format=3 uid="uid://coywhls8p10xs"]
+
+[ext_resource type="Script" path="res://scenes/ui/settings_menu.gd" id="1_script"]
+
+[node name="SettingsMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.08, 0.1, 0.14, 1)
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 40
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "设置"
+
+[node name="Form" type="VBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 14
+
+[node name="RowFullscreen" type="HBoxContainer" parent="Margin/VBox/Form"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="LblFs" type="Label" parent="Margin/VBox/Form/RowFullscreen"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text = "全屏"
+
+[node name="FullscreenCheck" type="CheckButton" parent="Margin/VBox/Form/RowFullscreen"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "启用独占全屏"
+
+[node name="RowRes" type="HBoxContainer" parent="Margin/VBox/Form"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="LblRes" type="Label" parent="Margin/VBox/Form/RowRes"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text = "分辨率（窗口）"
+
+[node name="ResolutionOption" type="OptionButton" parent="Margin/VBox/Form/RowRes"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+
+[node name="RowVsync" type="HBoxContainer" parent="Margin/VBox/Form"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="LblVsync" type="Label" parent="Margin/VBox/Form/RowVsync"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text = "垂直同步"
+
+[node name="VsyncOption" type="OptionButton" parent="Margin/VBox/Form/RowVsync"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+
+[node name="Hint" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.55, 0.6, 0.68, 1)
+text = "窗口化下可切换分辨率；全屏时以显示器模式为准。设置会在返回主菜单时保存。"
+
+[node name="BtnBack" type="Button" parent="Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "返回主界面"

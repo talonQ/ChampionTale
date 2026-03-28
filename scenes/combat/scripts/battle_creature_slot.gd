@@ -42,6 +42,7 @@ func setup(p_unit: BattleUnitRuntime, visual_scene: PackedScene) -> void:
 			driver.name = "CreatureAnimationDriver"
 			inst.add_child(driver)
 			_anim_driver = driver
+		call_deferred(&"_deferred_fit_pick_proxy_to_visual")
 	_force_mesh_main_layer_only(vis)
 
 
@@ -108,6 +109,67 @@ static func _collect_mesh_instances(root: Node) -> Array[MeshInstance3D]:
 		if n is MeshInstance3D:
 			out.append(n as MeshInstance3D)
 	return out
+
+
+func _deferred_fit_pick_proxy_to_visual() -> void:
+	var vis := get_node_or_null(^"Visual") as Node3D
+	if vis == null:
+		return
+	_fit_pick_proxy_to_visual(vis)
+
+
+## 球心：槽位本地 x=z=0，y 为合并 AABB 在 Y 方向长度的一半（约半身高度，弱化武器拉长 AABB 对水平偏移的影响）。
+## 半径仍由 AABB 最长边比例估算。
+func _fit_pick_proxy_to_visual(vis: Node3D) -> void:
+	var inv_slot := global_transform.affine_inverse()
+	var merged: AABB
+	var started := false
+	for mi in _collect_mesh_instances(vis):
+		var la := mi.get_aabb()
+		var to_slot := inv_slot * mi.global_transform
+		for corner in _aabb_local_corners(la):
+			var p: Vector3 = to_slot * corner
+			if not started:
+				merged = AABB(p, Vector3.ZERO)
+				started = true
+			else:
+				merged = merged.expand(p)
+	var proxy := get_node_or_null(^"PickProxy") as StaticBody3D
+	var cs := proxy.get_node_or_null(^"CollisionShape3D") as CollisionShape3D
+	if proxy == null or cs == null:
+		return
+	if not started or merged.size.length() < 0.05:
+		_reset_pick_proxy_default_shape(cs)
+		return
+	var longest := maxf(merged.size.x, maxf(merged.size.y, merged.size.z))
+	var r := longest * 0.22
+	# r = clampf(r, 0.42, 0.68)
+	var sp := SphereShape3D.new()
+	sp.radius = r
+	cs.shape = sp
+	cs.position = Vector3(0.0, merged.size.y * 0.5, 0.0)
+
+
+func _reset_pick_proxy_default_shape(cs: CollisionShape3D) -> void:
+	var sp := SphereShape3D.new()
+	sp.radius = 0.65
+	cs.shape = sp
+	cs.position = Vector3.ZERO
+
+
+static func _aabb_local_corners(aabb: AABB) -> Array[Vector3]:
+	var a := aabb.position
+	var b := aabb.position + aabb.size
+	return [
+		Vector3(a.x, a.y, a.z),
+		Vector3(b.x, a.y, a.z),
+		Vector3(a.x, b.y, a.z),
+		Vector3(b.x, b.y, a.z),
+		Vector3(a.x, a.y, b.z),
+		Vector3(b.x, a.y, b.z),
+		Vector3(a.x, b.y, b.z),
+		Vector3(b.x, b.y, b.z),
+	]
 
 
 func set_visual_alive(alive: bool) -> void:

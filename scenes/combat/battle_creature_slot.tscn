@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/combat/scripts/battle_creature_slot.gd" id="1_script"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_pick"]
-radius = 1.2
+radius = 0.65
 
 [node name="BattleCreatureSlot" type="Node3D"]
 script = ExtResource("1_script")

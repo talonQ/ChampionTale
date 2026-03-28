@@ -1,0 +1,83 @@
+[gd_scene format=3 uid="uid://bmainmenu001"]
+
+[ext_resource type="Script" uid="uid://k3af3h3lp6eb" path="res://scenes/ui/main_menu.gd" id="1_script"]
+
+[node name="MainMenu" type="Control" unique_id=411652874]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="." unique_id=220868600]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.08, 0.1, 0.14, 1)
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=1968433899]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 36
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 48
+
+[node name="VBox" type="VBoxContainer" parent="Margin" unique_id=1946520969]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="TitleZh" type="Label" parent="Margin/VBox" unique_id=671987513]
+layout_mode = 2
+theme_override_font_sizes/font_size = 44
+text = "英雄传说"
+horizontal_alignment = 1
+
+[node name="TitleEn" type="Label" parent="Margin/VBox" unique_id=1412713695]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.76, 0.9, 1)
+theme_override_font_sizes/font_size = 22
+text = "ChampionTale"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="Margin/VBox" unique_id=336854494]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="Buttons" type="VBoxContainer" parent="Margin/VBox" unique_id=4506662]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="BtnStart" type="Button" parent="Margin/VBox/Buttons" unique_id=1163317416]
+unique_name_in_owner = true
+layout_mode = 2
+text = "开始游戏"
+
+[node name="BtnCodex" type="Button" parent="Margin/VBox/Buttons" unique_id=1114868740]
+unique_name_in_owner = true
+layout_mode = 2
+text = "图鉴"
+
+[node name="BtnSettings" type="Button" parent="Margin/VBox/Buttons" unique_id=923784191]
+unique_name_in_owner = true
+layout_mode = 2
+text = "设置"
+
+[node name="BtnQuit" type="Button" parent="Margin/VBox/Buttons" unique_id=387649035]
+unique_name_in_owner = true
+layout_mode = 2
+text = "结束游戏"

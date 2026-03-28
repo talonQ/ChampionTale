@@ -17,6 +17,8 @@ var _typing_on_done: Callable = Callable()
 var _chain_lines: PackedStringArray = PackedStringArray()
 var _chain_index: int = 0
 var _chain_final: Callable = Callable()
+## ≥0 时覆盖 `read_pause_after_line_sec`（仅当前链每条台词播完后）；小于 0 则用默认。
+var _chain_pause_override_sec: float = -1.0
 
 
 func _init(label: RichTextLabel) -> void:
@@ -43,16 +45,22 @@ func process_frame(delta: float) -> void:
 			_emit_typewriter_done()
 
 
-func start_chain(lines: PackedStringArray, final_cb: Callable) -> void:
+func start_chain(
+	lines: PackedStringArray,
+	final_cb: Callable,
+	read_pause_after_each_line_sec: float = -1.0,
+) -> void:
 	var filtered := PackedStringArray()
 	for s in lines:
 		var t := s.strip_edges()
 		if not t.is_empty():
 			filtered.append(t)
 	if filtered.is_empty():
+		_chain_pause_override_sec = -1.0
 		if final_cb.is_valid():
 			final_cb.call()
 		return
+	_chain_pause_override_sec = read_pause_after_each_line_sec
 	_chain_lines = filtered
 	_chain_index = 0
 	_chain_final = final_cb
@@ -62,8 +70,11 @@ func start_chain(lines: PackedStringArray, final_cb: Callable) -> void:
 func _on_typewriter_chars_complete() -> void:
 	_label.visible_characters = -1
 	_typing_active = false
-	if read_pause_after_line_sec > 0.0:
-		_tw_read_pause_remaining = read_pause_after_line_sec
+	var pause_sec := read_pause_after_line_sec
+	if _chain_pause_override_sec >= 0.0:
+		pause_sec = _chain_pause_override_sec
+	if pause_sec > 0.0:
+		_tw_read_pause_remaining = pause_sec
 	else:
 		_emit_typewriter_done()
 
@@ -97,6 +108,7 @@ func _start_typewriter(plain_line: String, on_done: Callable) -> void:
 
 func _narrate_next_in_chain() -> void:
 	if _chain_index >= _chain_lines.size():
+		_chain_pause_override_sec = -1.0
 		var fin := _chain_final
 		_chain_final = Callable()
 		if fin.is_valid():
