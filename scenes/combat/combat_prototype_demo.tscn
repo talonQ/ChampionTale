@@ -2,8 +2,14 @@
 
 [ext_resource type="Script" uid="uid://qupxgt6aimyc" path="res://scenes/combat/scripts/combat_prototype_demo.gd" id="1_script"]
 [ext_resource type="Script" uid="uid://ctk0arsyr4ea6" path="res://battle/look_at_pivot_camera.gd" id="2_cam_script"]
-[ext_resource type="Resource" path="res://battle/definitions/demo_encounter.tres" id="3_demo_encounter"]
-[ext_resource type="Resource" path="res://battle/definitions/random_demo_pool.tres" id="4_random_pool"]
+[ext_resource type="Resource" uid="uid://c1nwpfx6u5v1" path="res://battle/definitions/demo_encounter.tres" id="3_demo_encounter"]
+[ext_resource type="Resource" uid="uid://jg1kkwpvchfx" path="res://battle/definitions/random_demo_pool.tres" id="4_random_pool"]
+[ext_resource type="Script" uid="uid://lbhtj7of3ql0" path="res://scenes/combat/scripts/combat_outline_post.gd" id="5_outline_post"]
+[ext_resource type="Shader" path="res://battle/shaders/outline_postprocess.gdshader" id="6_outline_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_outline"]
+shader = ExtResource("6_outline_shader")
+shader_parameter/thickness = 1.2
 
 [sub_resource type="Environment" id="Environment_battle"]
 background_mode = 1
@@ -72,8 +78,42 @@ script = ExtResource("2_cam_script")
 distance = 17.5
 pitch_deg = 48.0
 
+[node name="OutlineMaskViewport" type="SubViewport" parent="."]
+unique_name_in_owner = true
+transparent_bg = true
+handle_input_locally = false
+gui_disable_input = true
+render_target_update_mode = 0
+size = Vector2i(1280, 720)
+
+[node name="OutlineCamera" type="Camera3D" parent="OutlineMaskViewport"]
+unique_name_in_owner = true
+current = true
+cull_mask = 2
+
+[node name="OutlinePostCanvas" type="CanvasLayer" parent="."]
+unique_name_in_owner = true
+layer = 3
+visible = false
+
+[node name="OutlineOverlay" type="TextureRect" parent="OutlinePostCanvas"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture_filter = 1
+material = SubResource("ShaderMaterial_outline")
+
+[node name="OutlinePost" type="Node" parent="." unique_id=2069891179]
+script = ExtResource("5_outline_post")
+
 [node name="Floor" type="MeshInstance3D" parent="." unique_id=765049740]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+layers = 1
 material_override = SubResource("Material_floor")
 mesh = SubResource("PlaneMesh_floor")
 

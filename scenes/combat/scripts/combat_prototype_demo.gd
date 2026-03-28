@@ -57,6 +57,7 @@ const _SLOT_POSITION := {
 @onready var _unit_bars_root: Control = %UnitBarsRoot
 @onready var _camera_3d: Camera3D = %BattleCamera
 @onready var _battle_field: Node3D = %BattleField
+@onready var _outline_post: Node = $OutlinePost
 
 var _state = _CombatTurnState.new()
 var _narration
@@ -167,7 +168,17 @@ func _sync_3d_visuals() -> void:
 			continue
 		slot.set_visual_alive(u.is_alive())
 		var hi: bool = _highlight_actor != null and _highlight_actor.id == u.id and u.is_alive()
-		slot.set_highlight(hi)
+		slot.set_turn_highlight(hi)
+	_sync_outline_post()
+
+
+func _sync_outline_post() -> void:
+	if _outline_post == null or not _outline_post.has_method(&"set_active"):
+		return
+	if _highlight_actor != null and _highlight_actor.is_alive():
+		_outline_post.set_active(true, _highlight_actor.is_player_side)
+	else:
+		_outline_post.set_active(false, false)
 
 
 func _check_battle_end() -> bool:

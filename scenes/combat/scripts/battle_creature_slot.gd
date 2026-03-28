@@ -1,8 +1,11 @@
 extends Node3D
 ## 战斗场上单个单位的 3D 占位：可视化 + 射线可点的碰撞代理。
 ## 动画由子节点 CreatureAnimationDriver 处理，与战斗数值逻辑解耦。
+## 行动高亮：把网格加入第 2 渲染层，由 OutlineMaskViewport 专照该层，与 MonsterTale 相同管线。
 
 const _ANIM_DRIVER_SCRIPT := preload("res://components/creature_animation_driver.gd")
+## 主相机仅照第 1 层；描边开启时再打开第 2 层给 Outline 相机。
+const OUTLINE_RENDER_LAYER := 2
 
 var unit: BattleUnitRuntime
 ## CreatureAnimationDriver（components/creature_animation_driver.gd）
@@ -14,6 +17,7 @@ var _facing_override_active: bool = false
 
 func setup(p_unit: BattleUnitRuntime, visual_scene: PackedScene) -> void:
 	unit = p_unit
+	_set_outline_layer_on_meshes(false)
 	var proxy := get_node(^"PickProxy") as StaticBody3D
 	proxy.set_meta(&"battle_unit", p_unit)
 	var vis := get_node(^"Visual") as Node3D
@@ -32,6 +36,7 @@ func setup(p_unit: BattleUnitRuntime, visual_scene: PackedScene) -> void:
 			driver.name = "CreatureAnimationDriver"
 			inst.add_child(driver)
 			_anim_driver = driver
+	_force_mesh_main_layer_only(vis)
 
 
 ## 可选传入目标世界坐标（通常取对方槽位）：仅绕 Y 朝向目标，攻击动画结束后恢复进入攻击前的 rotation_degrees。
@@ -69,12 +74,34 @@ func _restore_facing_after_attack() -> void:
 		_facing_override_active = false
 
 
-func set_highlight(on: bool) -> void:
+func set_turn_highlight(active: bool) -> void:
+	var vis := get_node_or_null(^"Visual") as Node3D
+	if vis != null:
+		vis.scale = Vector3.ONE
+	_set_outline_layer_on_meshes(active)
+
+
+func _set_outline_layer_on_meshes(on: bool) -> void:
 	var vis := get_node_or_null(^"Visual") as Node3D
 	if vis == null:
 		return
-	var s := 1.08 if on else 1.0
-	vis.scale = Vector3(s, s, s)
+	for mi in _collect_mesh_instances(vis):
+		mi.set_layer_mask_value(OUTLINE_RENDER_LAYER, on)
+
+
+## 仅第 1 层，供主相机渲染；关闭第 2 层避免误入描边 RT。
+static func _force_mesh_main_layer_only(root: Node) -> void:
+	for mi in _collect_mesh_instances(root):
+		mi.layers = 0x1
+		mi.set_layer_mask_value(OUTLINE_RENDER_LAYER, false)
+
+
+static func _collect_mesh_instances(root: Node) -> Array[MeshInstance3D]:
+	var out: Array[MeshInstance3D] = []
+	for n in root.find_children("*", "", true, false):
+		if n is MeshInstance3D:
+			out.append(n as MeshInstance3D)
+	return out
 
 
 func set_visual_alive(alive: bool) -> void:
