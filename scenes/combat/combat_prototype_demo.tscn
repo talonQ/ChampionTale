@@ -25,38 +25,10 @@ albedo_color = Color(0.2, 0.22, 0.26, 1)
 [sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
 size = Vector2(26, 16)
 
-[sub_resource type="StyleBoxFlat" id="StyleBox_dialog"]
-content_margin_left = 16.0
-content_margin_top = 12.0
-content_margin_right = 16.0
-content_margin_bottom = 12.0
-bg_color = Color(0.97, 0.97, 0.95, 0.98)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.2, 0.22, 0.35, 1)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_tooltip"]
-content_margin_left = 10.0
-content_margin_top = 8.0
-content_margin_right = 10.0
-content_margin_bottom = 8.0
-bg_color = Color(0.08, 0.09, 0.12, 0.92)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.45, 0.5, 0.6, 1)
-
 [node name="CombatPrototypeDemo" type="Node" unique_id=1998837020]
 script = ExtResource("1_script")
-battle_text_chars_per_second = 48.0
-battle_text_read_pause_sec = 2.0
+battle_text_chars_per_second = 20.0
+battle_text_read_pause_sec = 0.5
 unit_bar_tween_duration_sec = 1.2
 encounter = ExtResource("3_demo_encounter")
 use_random_roster = true
@@ -186,7 +158,6 @@ theme_override_constants/separation = 6
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 10
-theme_override_styles/panel = SubResource("StyleBox_dialog")
 
 [node name="BattleMessageText" type="RichTextLabel" parent="UICanvas/BattleHudRoot/BottomHud/MessageFrame" unique_id=1486207075]
 unique_name_in_owner = true
@@ -194,8 +165,6 @@ custom_minimum_size = Vector2(0, 104)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
-theme_override_colors/default_color = Color(0.12, 0.12, 0.14, 1)
-theme_override_font_sizes/normal_font_size = 17
 bbcode_enabled = true
 scroll_following = true
 autowrap_mode = 2
@@ -227,13 +196,11 @@ visible = false
 offset_right = 280.0
 offset_bottom = 140.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBox_tooltip")
 
 [node name="TooltipText" type="RichTextLabel" parent="TooltipLayer/BattleTooltip" unique_id=1626976953]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
-theme_override_colors/default_color = Color(0.92, 0.93, 0.96, 1)
 theme_override_font_sizes/normal_font_size = 14
 bbcode_enabled = true
 fit_content = true

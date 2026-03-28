@@ -8,7 +8,7 @@ extends Node
 @export_group("Unit bars")
 @export_range(0.0, 3.0, 0.05, "suffix:s") var unit_bar_tween_duration_sec: float = 0.45
 @export_range(0.5, 8.0, 0.05, "suffix:m") var unit_bar_world_offset_y: float = 2.15
-@export_range(48.0, 220.0, 1.0, "suffix:px") var unit_bar_panel_min_width: float = 70.0
+@export_range(48.0, 220.0, 1.0, "suffix:px") var unit_bar_panel_min_width: float = 60.0
 @export_range(24.0, 100.0, 1.0, "suffix:px") var unit_bar_panel_min_height: float = 16.0
 @export_range(48.0, 220.0, 1.0, "suffix:px") var unit_bar_hp_width: float = 40.0
 @export_range(6.0, 28.0, 0.5, "suffix:px") var unit_bar_hp_height: float = 5.0
@@ -40,6 +40,7 @@ const _CombatUnitBarsController := preload("res://scenes/combat/scripts/combat_u
 const _CombatBattlePick := preload("res://scenes/combat/scripts/combat_battle_pick.gd")
 const _CombatUnitTooltipText := preload("res://scenes/combat/scripts/combat_unit_tooltip_text.gd")
 const _CombatTurnOrderStrip := preload("res://scenes/combat/scripts/combat_turn_order_strip.gd")
+const _BattleUiTheme := preload("res://ui/themes/champion_battle_theme.gd")
 ## 行动条圆圈内贴图（与 visual_lookup_id 对应）；由 `portrait.png`（自 WebP 转换）；缺项则用名字首字占位。
 const _STRIP_TEX_BY_VISUAL_ID: Dictionary = {
 	1: preload("res://assets/pokemon/khazix/portrait.png"),
@@ -109,6 +110,7 @@ var _skill_target_pick_hover_id: int = -1
 
 func _ready() -> void:
 	_battle_message.bbcode_enabled = false
+	_apply_battle_ui_theme()
 	var rng := RandomNumberGenerator.new()
 	if random_seed >= 0:
 		rng.seed = random_seed
@@ -143,6 +145,17 @@ func _ready() -> void:
 	_narration.start_chain(PackedStringArray(["战斗开始！"]), func() -> void:
 		call_deferred("_advance_battle")
 	)
+
+
+func _apply_battle_ui_theme() -> void:
+	var ui_theme: Theme = _BattleUiTheme.build()
+	_battle_hud_root.theme = ui_theme
+	_unit_bars_root.theme = ui_theme
+	_battle_tooltip.theme = ui_theme
+	_battle_tooltip.theme_type_variation = &"BattleTooltipPanel"
+	var top_bar := get_node_or_null(^"TurnOrderLayer/TopBar") as Control
+	if top_bar != null:
+		top_bar.theme = ui_theme
 
 
 func _process(delta: float) -> void:
