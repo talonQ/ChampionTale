@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://bp5wqfujguy13"]
+
+[ext_resource type="Script" path="res://scenes/combat/scripts/battle_creature_slot.gd" id="1_script"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_pick"]
+radius = 1.2
+
+[node name="BattleCreatureSlot" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="PickProxy" type="StaticBody3D" parent="."]
+collision_layer = 2
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PickProxy"]
+shape = SubResource("SphereShape3D_pick")
+
+[node name="Visual" type="Node3D" parent="."]

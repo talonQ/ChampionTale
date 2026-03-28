@@ -1,0 +1,177 @@
+[gd_scene format=3 uid="uid://56anm35l1wnc"]
+
+[ext_resource type="Script" uid="uid://qupxgt6aimyc" path="res://scenes/combat/scripts/combat_prototype_demo.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://ctk0arsyr4ea6" path="res://battle/look_at_pivot_camera.gd" id="2_cam_script"]
+
+[sub_resource type="Environment" id="Environment_battle"]
+background_mode = 1
+background_color = Color(0.11, 0.13, 0.17, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.5, 0.54, 0.62, 1)
+ambient_light_energy = 0.5
+
+[sub_resource type="StandardMaterial3D" id="Material_floor"]
+albedo_color = Color(0.2, 0.22, 0.26, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
+size = Vector2(26, 16)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_dialog"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.97, 0.97, 0.95, 0.98)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.2, 0.22, 0.35, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_tooltip"]
+content_margin_left = 10.0
+content_margin_top = 8.0
+content_margin_right = 10.0
+content_margin_bottom = 8.0
+bg_color = Color(0.08, 0.09, 0.12, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.45, 0.5, 0.6, 1)
+
+[node name="CombatPrototypeDemo" type="Node" unique_id=1998837020]
+script = ExtResource("1_script")
+battle_text_chars_per_second = 27.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=576368211]
+environment = SubResource("Environment_battle")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=512838184]
+transform = Transform3D(0.906, -0.275, 0.323, 0, 0.762, 0.648, -0.424, -0.587, 0.691, 3.5, 9, 5.5)
+light_energy = 1.2
+shadow_enabled = true
+
+[node name="BattleCamera" type="Camera3D" parent="." unique_id=1751546674]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.6691306, 0.7431448, 0, -0.7431448, 0.6691306, 0, 13.005034, 11.709785)
+current = true
+fov = 50.0
+script = ExtResource("2_cam_script")
+distance = 17.5
+pitch_deg = 48.0
+
+[node name="Floor" type="MeshInstance3D" parent="." unique_id=765049740]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+material_override = SubResource("Material_floor")
+mesh = SubResource("PlaneMesh_floor")
+
+[node name="BattleField" type="Node3D" parent="." unique_id=1341174231]
+unique_name_in_owner = true
+
+[node name="UnitBarsLayer" type="CanvasLayer" parent="." unique_id=1203707021]
+layer = 5
+
+[node name="UnitBarsRoot" type="Control" parent="UnitBarsLayer" unique_id=1456935678]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="UICanvas" type="CanvasLayer" parent="." unique_id=617327274]
+
+[node name="BattleHudRoot" type="Control" parent="UICanvas" unique_id=1995343000]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BottomHud" type="VBoxContainer" parent="UICanvas/BattleHudRoot" unique_id=2104044688]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = -228.0
+offset_right = -12.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 8
+
+[node name="ActionsBar" type="HBoxContainer" parent="UICanvas/BattleHudRoot/BottomHud" unique_id=1203187288]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="ActionsPanel" type="VBoxContainer" parent="UICanvas/BattleHudRoot/BottomHud/ActionsBar" unique_id=10531168]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Row1" type="HBoxContainer" parent="UICanvas/BattleHudRoot/BottomHud/ActionsBar/ActionsPanel" unique_id=1411357646]
+layout_mode = 2
+
+[node name="BtnRest" type="Button" parent="UICanvas/BattleHudRoot/BottomHud/ActionsBar/ActionsPanel/Row1" unique_id=89368874]
+unique_name_in_owner = true
+layout_mode = 2
+text = "休息（+15 专注）"
+
+[node name="SkillButtons" type="HBoxContainer" parent="UICanvas/BattleHudRoot/BottomHud/ActionsBar/ActionsPanel" unique_id=1213793849]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="MessageFrame" type="PanelContainer" parent="UICanvas/BattleHudRoot/BottomHud" unique_id=1153952853]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_styles/panel = SubResource("StyleBox_dialog")
+
+[node name="BattleMessageText" type="RichTextLabel" parent="UICanvas/BattleHudRoot/BottomHud/MessageFrame" unique_id=1486207075]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 104)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_colors/default_color = Color(0.12, 0.12, 0.14, 1)
+theme_override_font_sizes/normal_font_size = 17
+bbcode_enabled = true
+scroll_following = true
+autowrap_mode = 2
+
+[node name="TooltipLayer" type="CanvasLayer" parent="." unique_id=693115288]
+layer = 20
+
+[node name="BattleTooltip" type="PanelContainer" parent="TooltipLayer" unique_id=1579072371]
+unique_name_in_owner = true
+visible = false
+offset_right = 280.0
+offset_bottom = 140.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBox_tooltip")
+
+[node name="TooltipText" type="RichTextLabel" parent="TooltipLayer/BattleTooltip" unique_id=1626976953]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+theme_override_colors/default_color = Color(0.92, 0.93, 0.96, 1)
+theme_override_font_sizes/normal_font_size = 14
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 2
