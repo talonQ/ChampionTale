@@ -49,7 +49,8 @@ border_color = Color(0.45, 0.5, 0.6, 1)
 [node name="CombatPrototypeDemo" type="Node" unique_id=1998837020]
 script = ExtResource("1_script")
 battle_text_chars_per_second = 48.0
-battle_text_read_pause_sec = 2.5
+battle_text_read_pause_sec = 2.0
+unit_bar_tween_duration_sec = 1.2
 encounter = ExtResource("3_demo_encounter")
 use_random_roster = true
 random_pool = ExtResource("4_random_pool")

@@ -1,11 +1,14 @@
-[gd_resource type="Resource" script_class="CombatEncounterDefinition" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="CombatEncounterDefinition" format=3 uid="uid://c1nwpfx6u5v1"]
 
-[ext_resource type="Script" path="res://battle/combat_encounter_definition.gd" id="1"]
-[ext_resource type="Resource" path="res://battle/definitions/units/khazix.tres" id="2"]
-[ext_resource type="Resource" path="res://battle/definitions/units/malphite.tres" id="3"]
-[ext_resource type="Resource" path="res://battle/definitions/units/hecarim.tres" id="4"]
-[ext_resource type="Resource" path="res://battle/definitions/units/fizz.tres" id="5"]
+[ext_resource type="Script" uid="uid://b1xrgg33trlqh" path="res://battle/combat_encounter_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://cgbebaj7wkqb6" path="res://battle/battle_unit_definition.gd" id="1_x5s3v"]
+[ext_resource type="Resource" uid="uid://ca10qmvraaf4o" path="res://battle/definitions/units/khazix.tres" id="2"]
+[ext_resource type="Resource" uid="uid://ck16ddk8bw3uv" path="res://battle/definitions/units/malphite.tres" id="3"]
+[ext_resource type="Resource" path="res://battle/definitions/units/volibear_ally.tres" id="4"]
+[ext_resource type="Resource" uid="uid://dq0l36g1np4wu" path="res://battle/definitions/units/hecarim.tres" id="5"]
+[ext_resource type="Resource" uid="uid://bgl8tuokgue2m" path="res://battle/definitions/units/fizz.tres" id="6"]
+[ext_resource type="Resource" path="res://battle/definitions/units/renekton.tres" id="7"]
 
 [resource]
 script = ExtResource("1")
-roster = [ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5")]
+roster = Array[ExtResource("1_x5s3v")]([ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7")])

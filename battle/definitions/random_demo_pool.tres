@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="CombatRandomPoolDefinition" format=3 uid="uid://dgh3pnp4sjask"]
+[gd_resource type="Resource" script_class="CombatRandomPoolDefinition" format=3 uid="uid://jg1kkwpvchfx"]
 
 [ext_resource type="Script" uid="uid://dfkly5ici6vyo" path="res://battle/combat_random_pool_definition.gd" id="1"]
 [ext_resource type="Resource" uid="uid://ca10qmvraaf4o" path="res://battle/definitions/units/khazix.tres" id="2"]

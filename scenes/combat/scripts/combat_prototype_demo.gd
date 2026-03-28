@@ -13,7 +13,7 @@ const BAR_OFFSET_WORLD_Y := 2.15
 @export_group("Battle data")
 ## 留空则使用 `battle/definitions/demo_encounter.tres`；可在检查器指定其它 CombatEncounterDefinition。
 @export var encounter: CombatEncounterDefinition
-## 开启后从 `random_pool.unit_pool` 无放回抽取（先填满己方 1、2，再填敌方 3、4）。
+## 开启后从 `random_pool.unit_pool` 无放回抽取（先己方槽 1…N，再敌方 N+1…）。
 @export var use_random_roster: bool = false
 @export var random_pool: CombatRandomPoolDefinition
 ## 非负时固定种子便于复现；负值则每次开局随机。
@@ -38,10 +38,12 @@ const _VISUAL_BY_UNIT_ID := {
 	8: preload("res://assets/pokemon/wukong/avatar.tscn"),
 }
 const _SLOT_POSITION := {
-	1: Vector3(-2.2, 0, 3.5),
-	2: Vector3(2.2, 0, 3.5),
-	3: Vector3(-2.2, 0, -3.5),
-	4: Vector3(2.2, 0, -3.5),
+	1: Vector3(-3.6, 0, 3.5),
+	2: Vector3(0, 0, 3.5),
+	3: Vector3(3.6, 0, 3.5),
+	4: Vector3(-3.6, 0, -3.5),
+	5: Vector3(0, 0, -3.5),
+	6: Vector3(3.6, 0, -3.5),
 }
 
 @onready var _battle_message: RichTextLabel = %BattleMessageText
@@ -309,8 +311,7 @@ func _finish_player_action() -> void:
 
 
 func _update_hover_tooltip() -> void:
-	if _narration.is_narration_busy():
-		return
+	# 与台词并行刷新；若在 is_narration_busy 时整段 return，会导致提示框不跟鼠标显示/隐藏。
 	var mouse := get_viewport().get_mouse_position()
 	var hovered := get_viewport().gui_get_hovered_control()
 	if hovered != null:

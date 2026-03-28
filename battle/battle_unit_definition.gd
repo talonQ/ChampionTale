@@ -4,7 +4,7 @@ extends Resource
 
 
 @export var unit_id: int = 1
-## 对应场景里模型表（如 1=卡兹克）；随机出战时槽位 id 会重排，此项用于指定用哪只宝可梦模型。≤0 时用 unit_id。
+## 对应场景里模型表（如 1=卡兹克）；固定遭遇里战场槽位按 roster 顺序另计，此项仍作默认模型键。≤0 的 visual_id 时用 unit_id 取模型。
 @export var visual_id: int = 0
 @export var is_player_side: bool = true
 @export var display_name: String = "单位"

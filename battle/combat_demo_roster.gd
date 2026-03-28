@@ -9,9 +9,11 @@ const DEFAULT_ENCOUNTER := preload("res://battle/definitions/demo_encounter.tres
 static func create_units(encounter: CombatEncounterDefinition = null) -> Array[BattleUnitRuntime]:
 	var enc: CombatEncounterDefinition = encounter if encounter != null else DEFAULT_ENCOUNTER
 	var out: Array[BattleUnitRuntime] = []
+	var slot := 1
 	for def in enc.roster:
 		if def != null:
-			out.append(runtime_from_definition(def))
+			out.append(runtime_from_definition(def, slot))
+			slot += 1
 	return out
 
 
@@ -38,7 +40,7 @@ static func create_units_from_random_pool(
 	for def in picked_p:
 		out.append(runtime_from_template(def, slot, true))
 		slot += 1
-	slot = 3
+	slot = pool.players_to_field + 1
 	for def in picked_e:
 		out.append(runtime_from_template(def, slot, false))
 		slot += 1
@@ -93,10 +95,10 @@ static func runtime_from_template(
 	return u
 
 
-static func runtime_from_definition(def: BattleUnitDefinition) -> BattleUnitRuntime:
+static func runtime_from_definition(def: BattleUnitDefinition, battle_slot_id: int) -> BattleUnitRuntime:
 	var u := BattleUnitRuntime.new()
-	u.id = def.unit_id
-	u.visual_asset_id = def.visual_id if def.visual_id > 0 else 0
+	u.id = battle_slot_id
+	u.visual_asset_id = def.visual_id if def.visual_id > 0 else def.unit_id
 	u.is_player_side = def.is_player_side
 	u.display_name = def.display_name
 	u.level = def.level
