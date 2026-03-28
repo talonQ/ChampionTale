@@ -213,10 +213,10 @@ theme_override_constants/margin_top = 10
 [node name="CenterBar" type="CenterContainer" parent="TurnOrderLayer/TopBar" unique_id=1988070512]
 layout_mode = 2
 
-[node name="TurnOrderStrip" type="HBoxContainer" parent="TurnOrderLayer/TopBar/CenterBar" unique_id=1876152406]
+[node name="TurnOrderStrip" type="Control" parent="TurnOrderLayer/TopBar/CenterBar" unique_id=1876152406]
 unique_name_in_owner = true
 layout_mode = 2
-alignment = 1
+mouse_filter = 2
 
 [node name="TooltipLayer" type="CanvasLayer" parent="." unique_id=693115288]
 layer = 20

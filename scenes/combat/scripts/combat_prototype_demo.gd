@@ -20,6 +20,7 @@ extends Node
 @export_group("Turn order strip")
 @export_range(32, 96, 1, "suffix:px") var turn_order_icon_size: int = 44
 @export_range(0, 24, 1, "suffix:px") var turn_order_separation: int = 8
+@export_range(0.0, 1.5, 0.02, "suffix:s") var turn_order_anim_duration_sec: float = 0.38
 
 @export_group("Battle data")
 ## 留空则使用 `battle/definitions/demo_encounter.tres`；可在检查器指定其它 CombatEncounterDefinition。
@@ -78,7 +79,7 @@ const _SLOT_POSITION := {
 @onready var _tooltip_text: RichTextLabel = %TooltipText
 @onready var _battle_hud_root: Control = %BattleHudRoot
 @onready var _unit_bars_root: Control = %UnitBarsRoot
-@onready var _turn_order_row: HBoxContainer = %TurnOrderStrip
+@onready var _turn_order_strip_root: Control = %TurnOrderStrip
 @onready var _camera_3d: Camera3D = %BattleCamera
 @onready var _battle_field: Node3D = %BattleField
 @onready var _outline_post: Node = $OutlinePost
@@ -127,7 +128,12 @@ func _ready() -> void:
 	_bars.focus_bar_min_size = Vector2(unit_bar_focus_width, unit_bar_focus_height)
 	_bars.bars_vertical_separation = unit_bar_row_separation
 	_bars.screen_anchor_margin_px = unit_bar_screen_margin_px
-	_turn_strip = _CombatTurnOrderStrip.new(_turn_order_row, turn_order_icon_size, turn_order_separation)
+	_turn_strip = _CombatTurnOrderStrip.new(
+		_turn_order_strip_root,
+		turn_order_icon_size,
+		turn_order_separation,
+		turn_order_anim_duration_sec,
+	)
 	_btn_rest.pressed.connect(_on_rest_pressed)
 	_spawn_3d_slots()
 	_bars.clear_and_rebuild(_state.units)
