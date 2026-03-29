@@ -43,27 +43,7 @@ const _CombatUnitTooltipText := preload("res://scenes/combat/scripts/combat_unit
 const _CombatSkillTooltipText := preload("res://scenes/combat/scripts/combat_skill_tooltip_text.gd")
 const _CombatTurnOrderStrip := preload("res://scenes/combat/scripts/combat_turn_order_strip.gd")
 const _BattleUiTheme := preload("res://ui/themes/champion_battle_theme.gd")
-## 行动条圆圈内贴图（与 visual_lookup_id 对应）；由 `portrait.png`（自 WebP 转换）；缺项则用名字首字占位。
-const _STRIP_TEX_BY_VISUAL_ID: Dictionary = {
-	1: preload("res://assets/pokemon/khazix/portrait.png"),
-	2: preload("res://assets/pokemon/malphite/portrait.png"),
-	3: preload("res://assets/pokemon/hecarim/portrait.png"),
-	4: preload("res://assets/pokemon/fizz/portrait.png"),
-	5: preload("res://assets/pokemon/renekton/portrait.png"),
-	6: preload("res://assets/pokemon/trundle/portrait.png"),
-	7: preload("res://assets/pokemon/volibear/portrait.png"),
-	8: preload("res://assets/pokemon/wukong/portrait.png"),
-}
-const _VISUAL_BY_UNIT_ID := {
-	1: preload("res://assets/pokemon/khazix/avatar.tscn"),
-	2: preload("res://assets/pokemon/malphite/avatar.tscn"),
-	3: preload("res://assets/pokemon/hecarim/avatar.tscn"),
-	4: preload("res://assets/pokemon/fizz/avatar.tscn"),
-	5: preload("res://assets/pokemon/renekton/avatar.tscn"),
-	6: preload("res://assets/pokemon/trundle/avatar.tscn"),
-	7: preload("res://assets/pokemon/volibear/avatar.tscn"),
-	8: preload("res://assets/pokemon/wukong/avatar.tscn"),
-}
+const _PokedexVisualCatalog := preload("res://components/pokedex_visual_catalog.gd")
 ## 各 `unit.id` 在战场上的本地坐标（`BattleField` 子节点）。Z 绝对值越小，敌我两排越近。
 @export var slot_position_z: float = 2.6
 var _SLOT_POSITION := {
@@ -246,7 +226,7 @@ func _refresh_turn_order_strip() -> void:
 
 
 func _strip_portrait_for_unit(u: BattleUnitRuntime) -> Texture2D:
-	var v: Variant = _STRIP_TEX_BY_VISUAL_ID.get(u.visual_lookup_id(), null)
+	var v: Variant = _PokedexVisualCatalog.portrait_texture(u.visual_lookup_id())
 	return v as Texture2D
 
 
@@ -261,7 +241,7 @@ func _spawn_3d_slots() -> void:
 	for u in _state.units:
 		var slot: Node3D = _SLOT_SCENE.instantiate()
 		_battle_field.add_child(slot)
-		var vis: PackedScene = _VISUAL_BY_UNIT_ID.get(u.visual_lookup_id(), null)
+		var vis: PackedScene = _PokedexVisualCatalog.avatar_scene(u.visual_lookup_id())
 		slot.setup(u, vis)
 		slot.position = _SLOT_POSITION.get(u.id, Vector3.ZERO)
 		if u.is_player_side:

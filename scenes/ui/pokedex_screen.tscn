@@ -1,0 +1,182 @@
+[gd_scene format=3 uid="uid://cpgmpg1dihv6w"]
+
+[ext_resource type="Script" path="res://scenes/ui/pokedex_screen.gd" id="1_script"]
+
+[node name="PokedexScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.08, 0.1, 0.14, 1)
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 28
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="TopBar" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="BtnBack" type="Button" parent="Margin/VBox/TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "返回"
+
+[node name="TitleLabel" type="Label" parent="Margin/VBox/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+text = "图鉴"
+horizontal_alignment = 1
+
+[node name="SpacerTitle" type="Control" parent="Margin/VBox/TopBar"]
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+
+[node name="MainHSplit" type="HSplitContainer" parent="Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+split_offset = 320
+
+[node name="UnitScroll" type="ScrollContainer" parent="Margin/VBox/MainHSplit"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(288, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="UnitGrid" type="GridContainer" parent="Margin/VBox/MainHSplit/UnitScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 4
+
+[node name="RightSplit" type="VSplitContainer" parent="Margin/VBox/MainHSplit"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+split_offset = 360
+
+[node name="TopRow" type="HSplitContainer" parent="Margin/VBox/MainHSplit/RightSplit"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+size_flags_vertical = 3
+split_offset = 400
+
+[node name="BottomRow" type="HSplitContainer" parent="Margin/VBox/MainHSplit/RightSplit"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 260)
+layout_mode = 2
+size_flags_vertical = 3
+split_offset = 300
+
+[node name="PreviewPanel" type="PanelContainer" parent="Margin/VBox/MainHSplit/RightSplit/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="PreviewSubViewportContainer" type="SubViewportContainer" parent="Margin/VBox/MainHSplit/RightSplit/TopRow/PreviewPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+stretch = true
+custom_minimum_size = Vector2(320, 280)
+
+[node name="PreviewSubViewport" type="SubViewport" parent="Margin/VBox/MainHSplit/RightSplit/TopRow/PreviewPanel/PreviewSubViewportContainer"]
+unique_name_in_owner = true
+handle_input_locally = false
+size = Vector2i(512, 512)
+render_target_update_mode = 2
+transparent_bg = true
+
+[node name="PreviewCamera" type="Camera3D" parent="Margin/VBox/MainHSplit/RightSplit/TopRow/PreviewPanel/PreviewSubViewportContainer/PreviewSubViewport"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 1.4)
+fov = 42.0
+
+[node name="PreviewLight" type="DirectionalLight3D" parent="Margin/VBox/MainHSplit/RightSplit/TopRow/PreviewPanel/PreviewSubViewportContainer/PreviewSubViewport"]
+unique_name_in_owner = true
+transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0.6, 1.2, 0.8)
+light_energy = 1.15
+shadow_enabled = false
+
+[node name="PreviewModelRoot" type="Node3D" parent="Margin/VBox/MainHSplit/RightSplit/TopRow/PreviewPanel/PreviewSubViewportContainer/PreviewSubViewport"]
+unique_name_in_owner = true
+
+[node name="StatsPanel" type="PanelContainer" parent="Margin/VBox/MainHSplit/RightSplit/TopRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(268, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="StatsRichText" type="RichTextLabel" parent="Margin/VBox/MainHSplit/RightSplit/TopRow/StatsPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+fit_content = false
+scroll_active = true
+theme_override_font_sizes/normal_font_size = 14
+theme_override_colors/default_color = Color(0.9, 0.93, 0.96, 1)
+
+[node name="SkillsPanel" type="PanelContainer" parent="Margin/VBox/MainHSplit/RightSplit/BottomRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SkillList" type="ItemList" parent="Margin/VBox/MainHSplit/RightSplit/BottomRow/SkillsPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 14
+
+[node name="DetailPanel" type="PanelContainer" parent="Margin/VBox/MainHSplit/RightSplit/BottomRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SkillDetailLabel" type="Label" parent="Margin/VBox/MainHSplit/RightSplit/BottomRow/DetailPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.88, 0.91, 0.95, 1)
+autowrap_mode = 3

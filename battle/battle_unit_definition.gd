@@ -13,6 +13,10 @@ const _TraitData := preload("res://battle/trait_data.gd")
 @export var hp_max: int = 100
 @export var atk_base: int = 10
 @export var def_base: int = 5
+## 种族值特攻；小于 0 时图鉴显示为与 `atk_base` 相同（战斗数值暂不区分物/特）。
+@export var spatk_base: int = -1
+## 种族值特防；小于 0 时图鉴显示为与 `def_base` 相同。
+@export var spdef_base: int = -1
 @export var spd_base: int = 10
 @export var focus_max: int = 30
 ## 可学习技能池；生成战斗单位时从中无放回随机挑选至多 2 个作为本场携带技能（不含「休息」）。

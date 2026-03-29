@@ -2,7 +2,7 @@ extends Control
 
 const _BattleUiTheme := preload("res://ui/themes/champion_battle_theme.gd")
 const SCENE_COMBAT := "res://scenes/combat/combat_prototype_demo.tscn"
-const SCENE_CODEX := "res://scenes/ui/codex_placeholder.tscn"
+const SCENE_CODEX := "res://scenes/ui/pokedex_screen.tscn"
 const SCENE_SETTINGS := "res://scenes/ui/settings_menu.tscn"
 
 @onready var _btn_start: Button = %BtnStart
