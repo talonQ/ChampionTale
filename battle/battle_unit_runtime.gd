@@ -26,6 +26,8 @@ var skills: Array[SkillData] = []
 ## skill_id -> 剩余冷却回合数（按战斗回合递减）
 var skill_cooldown_remaining: Dictionary = {}
 var acted_this_round: bool = false
+## BattleStatus.Kind -> true；本场战斗持续，直至被解除。
+var active_statuses: Dictionary = {}
 
 ## 同速重排时使用的临时随机键，由战斗控制器每轮写入。
 var sort_tiebreak: float = 0.0
@@ -69,3 +71,14 @@ func add_focus(amount: int) -> void:
 
 func spend_focus(amount: int) -> void:
 	focus = maxi(0, focus - amount)
+
+
+func has_status(kind: BattleStatus.Kind) -> bool:
+	return active_statuses.get(kind, false)
+
+
+func set_status(kind: BattleStatus.Kind, enabled: bool) -> void:
+	if enabled:
+		active_statuses[kind] = true
+	else:
+		active_statuses.erase(kind)

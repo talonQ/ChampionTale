@@ -32,6 +32,7 @@ extends Node
 @export var random_seed: int = -1
 
 const _SLOT_SCENE := preload("res://scenes/combat/battle_creature_slot.tscn")
+const _HEAL_BURST_VFX := preload("res://scenes/vfx/heal_burst_vfx.tscn")
 const _CombatTurnState := preload("res://battle/combat_turn_state.gd")
 const _CombatDemoRoster := preload("res://battle/combat_demo_roster.gd")
 const _CombatActionExecutor := preload("res://battle/combat_action_executor.gd")
@@ -203,6 +204,15 @@ func _notify_slot_skill_cast(actor: BattleUnitRuntime, skill: SkillData, targets
 	slot.notify_skill_cast()
 
 
+func _on_hp_healed_visual(target: BattleUnitRuntime, _amount: int) -> void:
+	var slot: Variant = _slots_by_unit_id.get(target.id)
+	if slot == null:
+		return
+	var vfx := _HEAL_BURST_VFX.instantiate() as Node3D
+	_battle_field.add_child(vfx)
+	vfx.global_position = (slot as Node3D).global_position + Vector3(0.0, 1.05, 0.0)
+
+
 func _set_actions_enabled(on: bool) -> void:
 	_right_action_dock.visible = true
 	_right_action_dock.modulate.a = 1.0 if on else 0.0
@@ -314,11 +324,19 @@ func _advance_battle() -> void:
 	if next_u == null:
 		if _state.get_alive_units().is_empty():
 			return
-		_state.tick_new_round()
-		_refresh_turn_order_strip()
-		_narration.start_chain(PackedStringArray(["第 %d 回合！" % _state.round_number]), func() -> void:
-			call_deferred("_advance_battle")
+		var dot_lines := _CombatActionExecutor.apply_between_round_status_damage(
+			_state.units,
+			_on_unit_stats_changed,
 		)
+		if not dot_lines.is_empty():
+			_busy = true
+			_set_actions_enabled(false)
+			_narration.start_chain(dot_lines, func() -> void:
+				_busy = false
+				_finish_round_transition_after_dot_damage()
+			)
+			return
+		_finish_round_transition_after_dot_damage()
 		return
 	_highlight_actor = next_u
 	_sync_ui_after_state()
@@ -341,6 +359,7 @@ func _advance_battle() -> void:
 					_on_unit_stats_changed,
 					_notify_slot_skill_cast,
 					Callable(self, "_on_turn_completed"),
+					Callable(self, "_on_hp_healed_visual"),
 				)
 				_narration.start_chain(lines, func() -> void:
 					_busy = false
@@ -404,6 +423,7 @@ func _on_skill_button_pressed(skill: SkillData) -> void:
 			_on_unit_stats_changed,
 			_notify_slot_skill_cast,
 			Callable(self, "_on_turn_completed"),
+			Callable(self, "_on_hp_healed_visual"),
 		)
 		_narration.start_chain(PackedStringArray(lines), func() -> void:
 			_finish_player_action()
@@ -453,6 +473,7 @@ func _on_skill_target_pressed(target: BattleUnitRuntime) -> void:
 		_on_unit_stats_changed,
 		_notify_slot_skill_cast,
 		Callable(self, "_on_turn_completed"),
+		Callable(self, "_on_hp_healed_visual"),
 	)
 	_narration.start_chain(PackedStringArray(lines), func() -> void:
 		_finish_player_action()
@@ -613,6 +634,16 @@ func _unhandled_input(event: InputEvent) -> void:
 	if accept:
 		get_viewport().set_input_as_handled()
 		_on_skill_target_pressed(picked)
+
+
+func _finish_round_transition_after_dot_damage() -> void:
+	if _check_battle_end():
+		return
+	_state.tick_new_round()
+	_refresh_turn_order_strip()
+	_narration.start_chain(PackedStringArray(["第 %d 回合！" % _state.round_number]), func() -> void:
+		call_deferred("_advance_battle")
+	)
 
 
 func debug_peek_next_actor() -> BattleUnitRuntime:

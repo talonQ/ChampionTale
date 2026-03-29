@@ -19,6 +19,9 @@ static func apply_rest(
 	on_unit_changed: Callable,
 	on_turn_completed: Callable = Callable(),
 ) -> Array[String]:
+	var para := _lines_if_paralysis_skips_turn(actor, on_turn_completed)
+	if not para.is_empty():
+		return para
 	var before := actor.focus
 	actor.add_focus(REST_FOCUS_RECOVERY)
 	actor.acted_this_round = true
@@ -38,6 +41,7 @@ static func apply_skill(
 	on_unit_changed: Callable,
 	on_after_caster_spent: Callable = Callable(),
 	on_turn_completed: Callable = Callable(),
+	on_hp_healed: Callable = Callable(),
 ) -> Array[String]:
 	var out: Array[String] = []
 	var opener := "%s 使出了 %s！" % [short_name(actor), skill.display_name]
@@ -59,6 +63,9 @@ static func apply_skill(
 			if on_turn_completed.is_valid():
 				on_turn_completed.call(actor)
 			return [opener + " 目标无效。"]
+	var para := _lines_if_paralysis_skips_turn(actor, on_turn_completed)
+	if not para.is_empty():
+		return _prepend_opener_if_needed(opener, para)
 	actor.spend_focus(skill.focus_cost)
 	if on_unit_changed.is_valid():
 		on_unit_changed.call(actor)
@@ -89,6 +96,8 @@ static func apply_skill(
 					)
 			if on_unit_changed.is_valid():
 				on_unit_changed.call(target)
+			if target.is_alive():
+				_append_on_hit_status_effects(skill, target, parts, on_unit_changed)
 			out.append(opener + "\n" + "\n".join(PackedStringArray(parts)))
 		else:
 			out.append(opener + "\n但是没有命中！（专注仍会消耗）")
@@ -139,6 +148,8 @@ static func apply_skill(
 				)
 			if on_unit_changed.is_valid():
 				on_unit_changed.call(target)
+		if ally_hit and target.is_alive():
+			_append_on_hit_status_effects(skill, target, parts, on_unit_changed)
 		if not parts.is_empty() and out.is_empty():
 			out.append(opener + "\n" + "\n".join(PackedStringArray(parts)))
 	elif skill.target_kind == SkillData.TargetKind.NONE:
@@ -149,6 +160,8 @@ static func apply_skill(
 			actor.hp = mini(actor.hp_max, actor.hp + heal_amt)
 			if on_unit_changed.is_valid():
 				on_unit_changed.call(actor)
+			if heal_amt > 0 and on_hp_healed.is_valid():
+				on_hp_healed.call(actor, heal_amt)
 			primary = "%s 恢复了 %d 点生命！（%d / %d）" % [
 				short_name(actor),
 				heal_amt,
@@ -180,6 +193,78 @@ static func apply_skill(
 	return out
 
 
+static func apply_between_round_status_damage(
+	units: Array[BattleUnitRuntime],
+	on_unit_changed: Callable = Callable(),
+) -> Array[String]:
+	var lines: Array[String] = []
+	for u in units:
+		if not u.is_alive():
+			continue
+		if not u.has_status(BattleStatus.Kind.POISON):
+			continue
+		var raw := int(
+			round(float(u.hp_max) * float(BattleStatus.POISON_MAX_HP_FRACTION_PER_ROUND))
+		)
+		var dmg := maxi(1, raw)
+		BattleSkillResolver.apply_damage(u, dmg)
+		if on_unit_changed.is_valid():
+			on_unit_changed.call(u)
+		lines.append(
+			"%s 因中毒损失了 %d 点体力！（%d / %d）"
+			% [short_name(u), dmg, u.hp, u.hp_max]
+		)
+		if not u.is_alive():
+			lines.append("%s 倒下了！" % short_name(u))
+	return lines
+
+
+static func _lines_if_paralysis_skips_turn(
+	actor: BattleUnitRuntime,
+	on_turn_completed: Callable,
+) -> Array[String]:
+	if not actor.has_status(BattleStatus.Kind.PARALYSIS):
+		return []
+	if not BattleStatus.roll_paralysis_blocks_action():
+		return []
+	actor.acted_this_round = true
+	if on_turn_completed.is_valid():
+		on_turn_completed.call(actor)
+	return ["%s 因麻痹而无法行动。" % short_name(actor)]
+
+
+static func _prepend_opener_if_needed(opener: String, lines: Array[String]) -> Array[String]:
+	if lines.is_empty():
+		return lines
+	var merged: Array[String] = []
+	merged.append(opener + "\n" + lines[0])
+	for i in range(1, lines.size()):
+		merged.append(lines[i])
+	return merged
+
+
+static func _append_on_hit_status_effects(
+	skill: SkillData,
+	target: BattleUnitRuntime,
+	parts: Array[String],
+	on_unit_changed: Callable,
+) -> void:
+	for fx in skill.on_hit_status_effects:
+		if fx == null:
+			continue
+		if randf() > fx.chance:
+			continue
+		var k: BattleStatus.Kind = fx.status
+		if target.has_status(k):
+			continue
+		target.set_status(k, true)
+		if on_unit_changed.is_valid():
+			on_unit_changed.call(target)
+		parts.append(
+			"%s 中了%s！" % [short_name(target), BattleStatus.status_display_name(k)]
+		)
+
+
 static func alive_player_side(units: Array[BattleUnitRuntime]) -> Array[BattleUnitRuntime]:
 	var out: Array[BattleUnitRuntime] = []
 	for u in units:
@@ -205,6 +290,7 @@ static func build_enemy_action_lines(
 	on_unit_changed: Callable,
 	on_after_caster_spent: Callable = Callable(),
 	on_turn_completed: Callable = Callable(),
+	on_hp_healed: Callable = Callable(),
 ) -> PackedStringArray:
 	var candidates: Array[SkillData] = []
 	for s in actor.skills:
@@ -226,7 +312,15 @@ static func build_enemy_action_lines(
 	var skill: SkillData = candidates[0]
 	if skill.target_kind == SkillData.TargetKind.NONE:
 		return PackedStringArray(
-			apply_skill(actor, skill, [], on_unit_changed, on_after_caster_spent, on_turn_completed)
+			apply_skill(
+				actor,
+				skill,
+				[],
+				on_unit_changed,
+				on_after_caster_spent,
+				on_turn_completed,
+				on_hp_healed,
+			)
 		)
 	if skill.target_kind == SkillData.TargetKind.SINGLE_ALLY:
 		var allies := alive_allies_on_same_side(actor, units)
@@ -243,10 +337,19 @@ static func build_enemy_action_lines(
 				on_unit_changed,
 				on_after_caster_spent,
 				on_turn_completed,
+				on_hp_healed,
 			)
 		)
 	var pts := alive_player_side(units)
 	pts.sort_custom(func(a: BattleUnitRuntime, b: BattleUnitRuntime) -> bool: return a.hp < b.hp)
 	return PackedStringArray(
-		apply_skill(actor, skill, [pts[0]], on_unit_changed, on_after_caster_spent, on_turn_completed)
+		apply_skill(
+			actor,
+			skill,
+			[pts[0]],
+			on_unit_changed,
+			on_after_caster_spent,
+			on_turn_completed,
+			on_hp_healed,
+		)
 	)

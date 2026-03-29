@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8healvfxburst01"]
+
+[ext_resource type="Script" path="res://scenes/vfx/heal_burst_vfx.gd" id="1_script"]
+
+[node name="HealBurstVfx" type="Node3D"]
+script = ExtResource("1_script")

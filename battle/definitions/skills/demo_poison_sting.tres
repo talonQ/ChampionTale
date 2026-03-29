@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="SkillData" format=3]
+
+[ext_resource type="Script" path="res://battle/skill_data.gd" id="1"]
+[ext_resource type="Script" path="res://battle/skill_on_hit_effect.gd" id="2"]
+
+[sub_resource type="Resource" id="Sub_fx"]
+script = ExtResource("2")
+status = 0
+chance = 1.0
+
+[resource]
+script = ExtResource("1")
+id = &"demo_poison_sting"
+display_name = "试制毒刺"
+description = "不造成伤害；命中后使目标中毒（回合轮替时按最大生命比例受伤）。"
+focus_cost = 7
+hit_chance = 0.9
+deals_damage = false
+power = 0
+on_hit_status_effects = Array[ExtResource("2")]([SubResource("Sub_fx")])

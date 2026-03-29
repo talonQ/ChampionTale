@@ -10,6 +10,10 @@ static func format_bbcode(u: BattleUnitRuntime) -> String:
 		state = "\n[color=#888]无法战斗[/color]"
 	elif u.acted_this_round:
 		state = "\n[color=#aaa]本回合已行动[/color]"
+	if u.is_alive():
+		var st := _status_bbcode_line(u)
+		if not st.is_empty():
+			state += "\n" + st
 	return (
 		"[b]%s[/b]  %s  Lv.%d\n"
 		% [u.display_name, side, u.level]
@@ -18,3 +22,14 @@ static func format_bbcode(u: BattleUnitRuntime) -> String:
 		+ "攻击 %d  ·  防御 %d" % [u.effective_atk(), u.effective_def()]
 		+ state
 	)
+
+
+static func _status_bbcode_line(u: BattleUnitRuntime) -> String:
+	var bits: PackedStringArray = []
+	if u.has_status(BattleStatus.Kind.POISON):
+		bits.append("[color=#a6e3a1]中毒[/color]")
+	if u.has_status(BattleStatus.Kind.PARALYSIS):
+		bits.append("[color=#ffe08a]麻痹[/color]")
+	if bits.is_empty():
+		return ""
+	return "状态：" + " · ".join(bits)

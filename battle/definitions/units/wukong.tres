@@ -4,8 +4,10 @@
 [ext_resource type="Resource" uid="uid://dwaafuh33fyl2" path="res://battle/definitions/skills/u3_q.tres" id="2"]
 [ext_resource type="Script" uid="uid://b1gilu06gqybx" path="res://battle/skill_data.gd" id="2_sd"]
 [ext_resource type="Resource" uid="uid://31cqkuqpkdip" path="res://battle/definitions/skills/u3_w.tres" id="3"]
-[ext_resource type="Resource" path="res://battle/definitions/skills/common_self_heal_50.tres" id="4"]
-[ext_resource type="Resource" path="res://battle/definitions/skills/common_haste.tres" id="5"]
+[ext_resource type="Resource" path="res://battle/definitions/skills/demo_poison_sting.tres" id="4"]
+;[ext_resource type="Resource" path="res://battle/definitions/skills/common_self_heal_50.tres" id="4"]
+[ext_resource type="Resource" path="res://battle/definitions/skills/demo_paralysis_touch.tres" id="5"]
+;[ext_resource type="Resource" path="res://battle/definitions/skills/common_haste.tres" id="5"]
 [ext_resource type="Resource" path="res://battle/definitions/skills/common_vision_focus.tres" id="6"]
 
 [resource]

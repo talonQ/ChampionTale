@@ -46,6 +46,12 @@ static func format_skill_bbcode(skill: SkillData, actor: BattleUnitRuntime) -> S
 		lines.append("自身速度：%+d" % skill.self_speed_delta)
 	if skill.target_speed_delta != 0:
 		lines.append("命中目标速度：%+d" % skill.target_speed_delta)
+	for fx in skill.on_hit_status_effects:
+		if fx == null:
+			continue
+		var pct := int(round(fx.chance * 100.0))
+		var nm := BattleStatus.status_display_name(fx.status)
+		lines.append("命中时：%d%% 使目标陷入%s" % [pct, nm])
 	if actor != null:
 		var cd := actor.skill_cooldown(skill)
 		if cd > 0:
