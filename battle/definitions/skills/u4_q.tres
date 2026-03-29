@@ -10,3 +10,4 @@ description = "灵巧一击，对单体敌方造成伤害。"
 focus_cost = 8
 hit_chance = 0.91
 power = 13
+move_category = 1

@@ -82,20 +82,22 @@ static func apply_round_end_passives(
 					if toll_done:
 						continue
 					toll_done = true
-					var da: int = trait_res.power_toll_atk_mod
-					var dd: int = trait_res.power_toll_def_mod
-					u.atk_mod += da
-					u.def_mod += dd
+					var da: int = trait_res.power_toll_atk_stage
+					var dd: int = trait_res.power_toll_def_stage
+					u.add_attack_stage(da)
+					u.add_defense_stage(dd)
 					if on_unit_changed.is_valid():
 						on_unit_changed.call(u)
 					lines.append(
 						(
-							"%s 的特性「%s」生效：攻击 %+d、防御 %+d（当前有效 攻 %d · 防 %d）"
+							"%s 的特性「%s」生效：攻击阶段 %+d、防御阶段 %+d（当前 攻阶 %d · 防阶 %d，有效 攻 %d · 防 %d）"
 							% [
 								_BT.unit_short_name(u),
 								trait_res.display_name,
 								da,
 								dd,
+								u.atk_stage,
+								u.def_stage,
 								u.effective_atk(),
 								u.effective_def(),
 							]

@@ -11,3 +11,4 @@ focus_cost = 14
 hit_chance = 0.85
 power = 18
 cooldown_rounds = 2
+move_category = 1

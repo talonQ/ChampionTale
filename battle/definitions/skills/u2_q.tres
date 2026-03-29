@@ -10,3 +10,4 @@ description = "投掷碎片攻击单体敌人，命中较稳。"
 focus_cost = 6
 hit_chance = 0.95
 power = 10
+move_category = 1

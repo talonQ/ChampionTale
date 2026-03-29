@@ -9,4 +9,6 @@ display_name = "坚定意志"
 description = "稳住架势，小幅提升自身速度。"
 focus_cost = 5
 target_kind = 0
-self_speed_delta = 2
+deals_damage = false
+move_category = 2
+self_speed_stage_delta = 1

@@ -1,6 +1,8 @@
 class_name BattleUnitRuntime
 extends RefCounted
 
+const _BattleStatStageUtil := preload("res://battle/battle_stat_stage_util.gd")
+
 var id: int = 0
 ## 与 `_VISUAL_BY_UNIT_ID` 对应；≤0 时用 `id`（固定遭遇与旧数据兼容）。
 var visual_asset_id: int = 0
@@ -14,10 +16,14 @@ var hp_max: int = 100
 var atk_base: int = 10
 var def_base: int = 5
 var spd_base: int = 10
+var spatk_base: int = 10
+var spdef_base: int = 5
 
-var atk_mod: int = 0
-var def_mod: int = 0
-var spd_mod: int = 0
+var atk_stage: int = 0
+var def_stage: int = 0
+var spd_stage: int = 0
+var spatk_stage: int = 0
+var spdef_stage: int = 0
 
 var focus: int = 30
 var focus_max: int = 30
@@ -49,15 +55,43 @@ func is_alive() -> bool:
 
 
 func effective_atk() -> int:
-	return maxi(1, atk_base + atk_mod + level)
+	return _BattleStatStageUtil.effective_stat(atk_base + level, atk_stage)
 
 
 func effective_def() -> int:
-	return maxi(1, def_base + def_mod)
+	return _BattleStatStageUtil.effective_stat(def_base + level, def_stage)
 
 
 func effective_spd() -> int:
-	return maxi(1, spd_base + spd_mod)
+	return _BattleStatStageUtil.effective_stat(spd_base + level, spd_stage)
+
+
+func effective_spatk() -> int:
+	return _BattleStatStageUtil.effective_stat(spatk_base + level, spatk_stage)
+
+
+func effective_spdef() -> int:
+	return _BattleStatStageUtil.effective_stat(spdef_base + level, spdef_stage)
+
+
+func add_attack_stage(delta: int) -> void:
+	atk_stage = _BattleStatStageUtil.clamp_stage(atk_stage + delta)
+
+
+func add_defense_stage(delta: int) -> void:
+	def_stage = _BattleStatStageUtil.clamp_stage(def_stage + delta)
+
+
+func add_speed_stage(delta: int) -> void:
+	spd_stage = _BattleStatStageUtil.clamp_stage(spd_stage + delta)
+
+
+func add_spatk_stage(delta: int) -> void:
+	spatk_stage = _BattleStatStageUtil.clamp_stage(spatk_stage + delta)
+
+
+func add_spdef_stage(delta: int) -> void:
+	spdef_stage = _BattleStatStageUtil.clamp_stage(spdef_stage + delta)
 
 
 func skill_cooldown(skill: SkillData) -> int:

@@ -1,6 +1,15 @@
 class_name CombatSkillTooltipText
 extends RefCounted
 
+static func _move_category_label(mc: int) -> String:
+	match mc:
+		1: ## SkillData.MoveCategory.SPECIAL
+			return "特殊"
+		2: ## SkillData.MoveCategory.STATUS
+			return "变化"
+		_:
+			return "物理"
+
 
 static func format_rest_bbcode() -> String:
 	var lines: PackedStringArray = []
@@ -42,10 +51,11 @@ static func format_skill_bbcode(skill: SkillData, actor: BattleUnitRuntime) -> S
 	lines.append("命中：%d%%" % int(round(skill.hit_chance * 100.0)))
 	if skill.cooldown_rounds > 0:
 		lines.append("冷却：[b]%d[/b] 回合" % skill.cooldown_rounds)
-	if skill.self_speed_delta != 0:
-		lines.append("自身速度：%+d" % skill.self_speed_delta)
-	if skill.target_speed_delta != 0:
-		lines.append("命中目标速度：%+d" % skill.target_speed_delta)
+	lines.append("分类：%s" % _move_category_label(skill.move_category))
+	if skill.self_speed_stage_delta != 0:
+		lines.append("自身速度阶段：%+d" % skill.self_speed_stage_delta)
+	if skill.target_speed_stage_delta != 0:
+		lines.append("命中目标速度阶段：%+d" % skill.target_speed_stage_delta)
 	for fx in skill.on_hit_status_effects:
 		if fx == null:
 			continue

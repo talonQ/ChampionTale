@@ -10,3 +10,4 @@ description = "对一名敌人挥砍，平衡的伤害与消耗。"
 focus_cost = 7
 hit_chance = 0.9
 power = 11
+move_category = 1

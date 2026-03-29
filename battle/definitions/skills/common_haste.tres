@@ -13,4 +13,5 @@ hit_chance = 1.0
 cooldown_rounds = 0
 target_kind = 0
 deals_damage = false
-self_speed_delta = 5
+move_category = 2
+self_speed_stage_delta = 1

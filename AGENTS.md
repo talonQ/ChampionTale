@@ -29,7 +29,7 @@
 | `scenes/combat/scripts/` | 上述场景绑定的 **`.gd` 脚本**（含 `RefCounted` 子控制器）；**不要**与 `.tscn` 混放在 `scenes/combat/` 根目录 |
 | `components/` | 与战斗流程解耦的可复用脚本/工具 |
 | `ui/themes/` | 全局 UI 主题脚本（如 `champion_battle_theme.gd` → `Theme`），由战斗等场景根在 `_ready` 赋给 HUD 根节点 |
-| `docs/` | 玩法与系统设计文档（非代码规范） |
+| `docx/` | 玩法与系统设计文档（非代码规范）；新增文档请写在此目录，勿用 `docs/` |
 
 **战斗场景目录约定**：`scenes/combat/` 只放场景资源；同模块脚本统一放在 `scenes/combat/scripts/`。新增战斗子场景时沿用同一模式（例如 `foo.tscn` + `scripts/foo.gd`），`preload` / 场景 `ext_resource` 使用 `res://scenes/combat/...` 与 `res://scenes/combat/scripts/...` 区分路径即可。
 

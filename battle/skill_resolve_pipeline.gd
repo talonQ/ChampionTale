@@ -214,14 +214,14 @@ static func _phase_self_speed(ctx: SkillResolveContext) -> void:
 	var sk := ctx.skill
 	var actor := ctx.actor
 	var opener := ctx.opener
-	if sk.self_speed_delta == 0:
+	if sk.self_speed_stage_delta == 0:
 		return
-	actor.spd_mod += sk.self_speed_delta
+	actor.add_speed_stage(sk.self_speed_stage_delta)
 	var spd_line: String
-	if sk.self_speed_delta > 0:
-		spd_line = "%s 的速度提升了！（当前速度 %d）" % [_BT.unit_short_name(actor), actor.effective_spd()]
+	if sk.self_speed_stage_delta > 0:
+		spd_line = "%s 的速度能力提升了！（当前速度 %d，阶段 %+d）" % [_BT.unit_short_name(actor), actor.effective_spd(), actor.spd_stage]
 	else:
-		spd_line = "%s 的速度降低了！（当前速度 %d）" % [_BT.unit_short_name(actor), actor.effective_spd()]
+		spd_line = "%s 的速度能力降低了！（当前速度 %d，阶段 %+d）" % [_BT.unit_short_name(actor), actor.effective_spd(), actor.spd_stage]
 	if ctx.segments.is_empty():
 		ctx.segments.append(opener + "\n" + spd_line)
 	else:

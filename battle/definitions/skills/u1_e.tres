@@ -10,4 +10,6 @@ description = "不造成伤害，提升自身速度以便抢先行动。"
 focus_cost = 6
 cooldown_rounds = 1
 target_kind = 0
-self_speed_delta = 4
+deals_damage = false
+move_category = 2
+self_speed_stage_delta = 1

@@ -39,7 +39,7 @@ enum Kind {
 @export_range(0.0, 1.0) var focus_restore_max_fraction: float = 0.16
 
 @export_group("力量代价（POWER_TOLL_END_ROUND）")
-## 每回合结束时叠加到 `atk_mod`（可叠多场）。
-@export var power_toll_atk_mod: int = 6
-## 每回合结束时叠加到 `def_mod`（通常为负）。
-@export var power_toll_def_mod: int = -5
+## 每回合结束时 **攻击能力阶段** 变化。
+@export var power_toll_atk_stage: int = 1
+## 每回合结束时 **防御能力阶段** 变化（通常为负）。
+@export var power_toll_def_stage: int = -1

@@ -57,16 +57,16 @@ static func append_target_speed_lines(
 	parts: Array[String],
 	on_unit_changed: Callable,
 ) -> void:
-	if not target.is_alive() or skill.target_speed_delta == 0:
+	if not target.is_alive() or skill.target_speed_stage_delta == 0:
 		return
-	target.spd_mod += skill.target_speed_delta
-	if skill.target_speed_delta > 0:
+	target.add_speed_stage(skill.target_speed_stage_delta)
+	if skill.target_speed_stage_delta > 0:
 		parts.append(
-			"%s 的速度提升了！（当前速度 %d）" % [_BT.unit_short_name(target), target.effective_spd()]
+			"%s 的速度能力提升了！（当前速度 %d，阶段 %+d）" % [_BT.unit_short_name(target), target.effective_spd(), target.spd_stage]
 		)
 	else:
 		parts.append(
-			"%s 的速度降低了！（当前速度 %d）" % [_BT.unit_short_name(target), target.effective_spd()]
+			"%s 的速度能力降低了！（当前速度 %d，阶段 %+d）" % [_BT.unit_short_name(target), target.effective_spd(), target.spd_stage]
 		)
 	if on_unit_changed.is_valid():
 		on_unit_changed.call(target)

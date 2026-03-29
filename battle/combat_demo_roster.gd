@@ -105,6 +105,14 @@ static func _pick_n_skills_without_replacement(
 	return p
 
 
+static func _spatk_from_def(def: BattleUnitDefinition) -> int:
+	return def.spatk_base if def.spatk_base >= 0 else def.atk_base
+
+
+static func _spdef_from_def(def: BattleUnitDefinition) -> int:
+	return def.spdef_base if def.spdef_base >= 0 else def.def_base
+
+
 static func _traits_from_definition(def: BattleUnitDefinition) -> Array[TraitData]:
 	var out: Array[TraitData] = []
 	for t in def.traits:
@@ -153,6 +161,8 @@ static func runtime_from_template(
 	u.atk_base = def.atk_base
 	u.def_base = def.def_base
 	u.spd_base = def.spd_base
+	u.spatk_base = _spatk_from_def(def)
+	u.spdef_base = _spdef_from_def(def)
 	u.focus_max = def.focus_max
 	u.focus = def.focus_max
 	u.traits = _traits_from_definition(def)
@@ -178,6 +188,8 @@ static func runtime_from_definition(
 	u.atk_base = def.atk_base
 	u.def_base = def.def_base
 	u.spd_base = def.spd_base
+	u.spatk_base = _spatk_from_def(def)
+	u.spdef_base = _spdef_from_def(def)
 	u.focus_max = def.focus_max
 	u.focus = def.focus_max
 	u.traits = _traits_from_definition(def)

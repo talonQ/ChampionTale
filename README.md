@@ -1,6 +1,6 @@
 # ChampionTale（英雄传说）
 
-单人开发的 **回合制、类宝可梦、肉鸽爬塔** 游戏原型与内容管线，使用 **Godot 4.6** 构建。当前仓库以 **战斗原型**、**图鉴** 与 **数据驱动配置**（单位 / 技能 / 特性 / 遭遇）为主，长期目标参见 `docs/gameplay-design.md`。
+单人开发的 **回合制、类宝可梦、肉鸽爬塔** 游戏原型与内容管线，使用 **Godot 4.6** 构建。当前仓库以 **战斗原型**、**图鉴** 与 **数据驱动配置**（单位 / 技能 / 特性 / 遭遇）为主，长期目标参见 `docx/gameplay-design.md`。
 
 ---
 
@@ -22,7 +22,7 @@
 | **图鉴** | 浏览全部可参战单位：头像列表、SubViewport 内 3D 预览（Idle、等距视角、可选绕轴旋转）、种族值与特性、可学习技能及详情。 |
 | **设置** | 窗口相关选项（由 `WindowSettings` Autoload 等配合）。 |
 
-玩法与术语（回合 / 行动 / 专注值等）见 **`docs/gameplay-design.md`**；技能字段说明见 **`docs/skill-system.md`**。
+玩法与术语（回合 / 行动 / 专注值等）见 **`docx/gameplay-design.md`**；技能字段说明见 **`docx/skill-system.md`**。
 
 ---
 
@@ -57,7 +57,7 @@
 | `scenes/ui/` | 主菜单、图鉴、设置、场景过渡等。 |
 | `components/` | 可复用组件（如动画驱动、图鉴用视觉目录等）。 |
 | `assets/pokemon/` | 角色模型、头像 `portrait.png`、`avatar.tscn` 等。 |
-| `docs/` | 设计文档与排错记录（如图鉴说明、导出注意事项）。 |
+| `docx/` | 设计文档与排错记录（如图鉴说明、导出注意事项、战斗数值约定）。 |
 
 协作与代码约定见 **`AGENTS.md`**。
 
@@ -67,17 +67,18 @@
 
 工程内包含 **`export_presets.cfg`**（示例预设名 `ChampionTale`）。在编辑器中打开 **项目 → 导出**，选择对应预设并导出即可。
 
-导出后若出现 **图鉴无数据**、**无法进入战斗** 等与资源加载相关的问题，可查阅 **`docs/export-pokedex-troubleshooting.md`**（目录枚举、`preload` 链、场景过渡 `await` 等说明）。
+导出后若出现 **图鉴无数据**、**无法进入战斗** 等与资源加载相关的问题，可查阅 **`docx/export-pokedex-troubleshooting.md`**（目录枚举、`preload` 链、场景过渡 `await` 等说明）。
 
 ---
 
 ## 文档索引
 
-- `docs/gameplay-design.md` — 类型定位、战斗术语、专注值、爬塔与队伍规则等  
-- `docs/skill-system.md` — 技能资源字段与行为说明  
-- `docs/pokedex.md` — 图鉴界面需求说明  
-- `docs/battle-outline-postprocess.md` — 战斗描边后处理管线说明  
-- `docs/export-pokedex-troubleshooting.md` — 导出构建与图鉴 / 遭遇预加载问题记录  
+- `docx/gameplay-design.md` — 类型定位、战斗术语、专注值、爬塔与队伍规则等  
+- `docx/skill-system.md` — 技能资源字段与行为说明  
+- `docx/pokedex.md` — 图鉴界面需求说明  
+- `docx/battle-outline-postprocess.md` — 战斗描边后处理管线说明  
+- `docx/battle-stat-stages.md` — 战斗能力阶段（Stat Stages）、物/特/变化与 HP 约定  
+- `docx/export-pokedex-troubleshooting.md` — 导出构建与图鉴 / 遭遇预加载问题记录  
 
 ---
 

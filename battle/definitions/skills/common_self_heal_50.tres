@@ -14,3 +14,4 @@ cooldown_rounds = 2
 target_kind = 0
 deals_damage = false
 heal_self_max_hp_fraction = 0.5
+move_category = 2

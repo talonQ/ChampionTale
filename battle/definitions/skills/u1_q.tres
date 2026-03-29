@@ -10,3 +10,4 @@ description = "对一名敌方造成物理伤害，出手较快。"
 focus_cost = 8
 hit_chance = 0.92
 power = 12
+move_category = 0

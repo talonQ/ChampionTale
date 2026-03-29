@@ -1,5 +1,5 @@
 extends Control
-## 图鉴：左侧单位头像网格，右上种族值/特性，中上 3D 预览，下为技能列表与详情（见 `docs/pokedex.md`）。
+## 图鉴：左侧单位头像网格，右上种族值/特性，中上 3D 预览，下为技能列表与详情（见 `docx/pokedex.md`）。
 
 const _BattleUiTheme := preload("res://ui/themes/champion_battle_theme.gd")
 const _PokedexVisualCatalog := preload("res://components/pokedex_visual_catalog.gd")

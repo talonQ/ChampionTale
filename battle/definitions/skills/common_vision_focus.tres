@@ -14,3 +14,4 @@ cooldown_rounds = 0
 target_kind = 2
 deals_damage = false
 restore_target_focus_max_fraction = 0.5
+move_category = 2

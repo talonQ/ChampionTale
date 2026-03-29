@@ -9,4 +9,5 @@ display_name = "粘液减速"
 description = "不造成伤害，命中后降低目标速度。"
 focus_cost = 5
 deals_damage = false
-target_speed_delta = -6
+move_category = 2
+target_speed_stage_delta = -2
