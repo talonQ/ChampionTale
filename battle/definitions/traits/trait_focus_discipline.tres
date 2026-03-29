@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="TraitData" format=3]
+[gd_resource type="Resource" script_class="TraitData" format=3 uid="uid://bc36g0ryfwrka"]
 
-[ext_resource type="Script" path="res://battle/trait_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://c4llt1seyk7r1" path="res://battle/trait_data.gd" id="1"]
 
 [resource]
 script = ExtResource("1")
@@ -8,4 +8,3 @@ id = &"trait_focus_discipline"
 display_name = "专注力"
 description = "每回合结束时，按最大专注的一定比例恢复专注。"
 kind = 4
-focus_restore_max_fraction = 0.16

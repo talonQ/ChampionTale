@@ -44,12 +44,12 @@ shadow_enabled = true
 
 [node name="BattleCamera" type="Camera3D" parent="." unique_id=1751546674]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.6691306, 0.7431448, 0, -0.7431448, 0.6691306, 0, 13.005034, 11.709785)
+transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 16.263456, 16.263456)
 current = true
-fov = 50.0
+fov = 30.0
 script = ExtResource("2_cam_script")
-distance = 17.5
-pitch_deg = 48.0
+distance = 23.0
+pitch_deg = 45.0
 
 [node name="OutlineMaskViewport" type="SubViewport" parent="." unique_id=1233288007]
 unique_name_in_owner = true

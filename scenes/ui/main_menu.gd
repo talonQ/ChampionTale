@@ -23,23 +23,29 @@ func _ready() -> void:
 
 func _on_start_game_pressed() -> void:
 	if _scene_transition != null:
-		_scene_transition.fade_to_scene(SCENE_COMBAT)
+		await _scene_transition.fade_to_scene(SCENE_COMBAT)
 	else:
-		get_tree().change_scene_to_file(SCENE_COMBAT)
+		var err := get_tree().change_scene_to_file(SCENE_COMBAT)
+		if err != OK:
+			push_error("无法加载战斗场景：%s (%s)" % [SCENE_COMBAT, error_string(err)])
 
 
 func _on_codex_pressed() -> void:
 	if _scene_transition != null:
-		_scene_transition.fade_to_scene(SCENE_CODEX)
+		await _scene_transition.fade_to_scene(SCENE_CODEX)
 	else:
-		get_tree().change_scene_to_file(SCENE_CODEX)
+		var err := get_tree().change_scene_to_file(SCENE_CODEX)
+		if err != OK:
+			push_error("无法加载图鉴场景：%s (%s)" % [SCENE_CODEX, error_string(err)])
 
 
 func _on_settings_pressed() -> void:
 	if _scene_transition != null:
-		_scene_transition.fade_to_scene(SCENE_SETTINGS)
+		await _scene_transition.fade_to_scene(SCENE_SETTINGS)
 	else:
-		get_tree().change_scene_to_file(SCENE_SETTINGS)
+		var err := get_tree().change_scene_to_file(SCENE_SETTINGS)
+		if err != OK:
+			push_error("无法加载设置场景：%s (%s)" % [SCENE_SETTINGS, error_string(err)])
 
 
 func _on_quit_pressed() -> void:

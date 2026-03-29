@@ -6,6 +6,17 @@ const _PokedexVisualCatalog := preload("res://components/pokedex_visual_catalog.
 const _CreatureAnimationDriver := preload("res://components/creature_animation_driver.gd")
 const SCENE_MAIN := "res://scenes/ui/main_menu.tscn"
 const _UNITS_DIR := "res://battle/definitions/units/"
+## 显式 preload，保证导出包收录单位定义；导出后 `DirAccess` 枚举 `res://` 子目录常不可靠，不能单靠扫描。
+const _UNIT_DEFINITION_PRELOADS: Array[BattleUnitDefinition] = [
+	preload("res://battle/definitions/units/khazix.tres"),
+	preload("res://battle/definitions/units/malphite.tres"),
+	preload("res://battle/definitions/units/hecarim.tres"),
+	preload("res://battle/definitions/units/fizz.tres"),
+	preload("res://battle/definitions/units/renekton.tres"),
+	preload("res://battle/definitions/units/trundle.tres"),
+	preload("res://battle/definitions/units/volibear.tres"),
+	preload("res://battle/definitions/units/wukong.tres"),
+]
 
 @export_group("3D 预览（等距感）")
 ## 相对水平面的俯角（越大越「俯视」）；约 45° 接近常见等距观感。
@@ -152,20 +163,35 @@ func _apply_pokedex_layout() -> void:
 
 func _load_and_sort_units() -> void:
 	_units.clear()
+	var seen: Dictionary = {}
+	for def in _UNIT_DEFINITION_PRELOADS:
+		if def == null:
+			continue
+		var rp := (def as Resource).resource_path
+		if not rp.is_empty():
+			if seen.has(rp):
+				continue
+			seen[rp] = true
+		_units.append(def)
 	var dir := DirAccess.open(_UNITS_DIR)
-	if dir == null:
-		push_warning("Pokedex: cannot open units dir: %s" % _UNITS_DIR)
-		return
-	dir.list_dir_begin()
-	var entry := dir.get_next()
-	while entry != "":
-		if not dir.current_is_dir() and entry.ends_with(".tres"):
-			var path := _UNITS_DIR + entry
-			var res := load(path)
-			if res is BattleUnitDefinition:
-				_units.append(res as BattleUnitDefinition)
-		entry = dir.get_next()
-	dir.list_dir_end()
+	if dir != null:
+		dir.list_dir_begin()
+		var entry := dir.get_next()
+		while entry != "":
+			if not dir.current_is_dir() and entry.ends_with(".tres"):
+				var path := _UNITS_DIR + entry
+				if seen.has(path):
+					entry = dir.get_next()
+					continue
+				if ResourceLoader.exists(path):
+					var res: Resource = load(path)
+					if res is BattleUnitDefinition:
+						seen[path] = true
+						_units.append(res as BattleUnitDefinition)
+			entry = dir.get_next()
+		dir.list_dir_end()
+	elif _units.is_empty():
+		push_warning("Pokedex: cannot open units dir (且无 preload 条目): %s" % _UNITS_DIR)
 	_units.sort_custom(_compare_unit_defs)
 
 

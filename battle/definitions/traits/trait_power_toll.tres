@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="TraitData" format=3]
+[gd_resource type="Resource" script_class="TraitData" format=3 uid="uid://b2wsoal0gh8rm"]
 
-[ext_resource type="Script" path="res://battle/trait_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://c4llt1seyk7r1" path="res://battle/trait_data.gd" id="1"]
 
 [resource]
 script = ExtResource("1")
@@ -8,5 +8,3 @@ id = &"trait_power_toll"
 display_name = "力量代价"
 description = "每回合结束时，牺牲部分防御以换取更高的攻击性（修正可多场叠加）。"
 kind = 5
-power_toll_atk_mod = 6
-power_toll_def_mod = -5

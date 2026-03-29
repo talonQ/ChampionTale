@@ -1,11 +1,9 @@
-[gd_resource type="Resource" script_class="TraitData" format=3]
+[gd_resource type="Resource" script_class="TraitData" format=3 uid="uid://dhtplg6watvum"]
 
-[ext_resource type="Script" path="res://battle/trait_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://c4llt1seyk7r1" path="res://battle/trait_data.gd" id="1"]
 
 [resource]
 script = ExtResource("1")
 id = &"trait_regen"
 display_name = "回复力"
 description = "每回合结束时，恢复最大生命值的一部分。"
-kind = 0
-regen_max_hp_fraction = 0.08
