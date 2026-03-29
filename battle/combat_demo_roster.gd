@@ -5,6 +5,7 @@ extends RefCounted
 
 const DEFAULT_ENCOUNTER := preload("res://battle/definitions/demo_encounter.tres")
 const MAX_EQUIPPED_SKILLS := 2
+const _TraitHookInstaller := preload("res://battle/battle_trait_hook_installer.gd")
 
 
 static func _rng_or_new(rng: RandomNumberGenerator) -> RandomNumberGenerator:
@@ -156,6 +157,7 @@ static func runtime_from_template(
 	u.focus = def.focus_max
 	u.traits = _traits_from_definition(def)
 	_assign_runtime_skills(u, def, r)
+	_TraitHookInstaller.install_for_unit(u)
 	return u
 
 
@@ -180,4 +182,5 @@ static func runtime_from_definition(
 	u.focus = def.focus_max
 	u.traits = _traits_from_definition(def)
 	_assign_runtime_skills(u, def, r)
+	_TraitHookInstaller.install_for_unit(u)
 	return u

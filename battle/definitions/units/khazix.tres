@@ -9,7 +9,7 @@
 [ext_resource type="Resource" path="res://battle/definitions/skills/common_self_heal_50.tres" id="6"]
 [ext_resource type="Resource" path="res://battle/definitions/skills/common_haste.tres" id="7"]
 [ext_resource type="Resource" path="res://battle/definitions/skills/common_vision_focus.tres" id="8"]
-[ext_resource type="Script" path="res://battle/trait_data.gd" id="trait_t"]
+[ext_resource type="Script" uid="uid://c4llt1seyk7r1" path="res://battle/trait_data.gd" id="trait_t"]
 [ext_resource type="Resource" path="res://battle/definitions/traits/trait_swift.tres" id="tr_swift"]
 
 [resource]

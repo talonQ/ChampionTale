@@ -6,44 +6,6 @@ extends RefCounted
 const _BT := preload("res://battle/battle_text_util.gd")
 
 
-static func effective_skill_power(attacker: BattleUnitRuntime, skill: SkillData) -> int:
-	var p := skill.power
-	if not skill.deals_damage:
-		return p
-	for trait_res in attacker.traits:
-		if trait_res == null:
-			continue
-		if trait_res.kind == TraitData.Kind.BULLY_FULL_HP_DOUBLE_POWER:
-			if attacker.hp >= attacker.hp_max:
-				p *= 2
-			break
-	return p
-
-
-static func modify_raw_damage_swift(
-	attacker: BattleUnitRuntime,
-	defender: BattleUnitRuntime,
-	skill: SkillData,
-	raw: int,
-) -> int:
-	if not skill.deals_damage:
-		return raw
-	for trait_res in attacker.traits:
-		if trait_res == null or trait_res.kind != TraitData.Kind.SWIFT_SPEED_GAP:
-			continue
-		var sa := attacker.effective_spd()
-		var sd := defender.effective_spd()
-		if sa <= sd:
-			continue
-		var delta := sa - sd
-		var bonus: float = minf(
-			trait_res.swift_max_damage_mult_bonus,
-			float(delta) * trait_res.swift_damage_mult_per_speed_point,
-		)
-		return int(round(float(raw) * (1.0 + bonus)))
-	return raw
-
-
 static func append_poison_skin_after_damage(
 	attacker: BattleUnitRuntime,
 	target: BattleUnitRuntime,

@@ -142,7 +142,7 @@ func _fit_pick_proxy_to_visual(vis: Node3D) -> void:
 		_reset_pick_proxy_default_shape(cs)
 		return
 	var longest := maxf(merged.size.x, maxf(merged.size.y, merged.size.z))
-	var r := longest * 0.22
+	var r := longest * 0.4
 	# r = clampf(r, 0.42, 0.68)
 	var sp := SphereShape3D.new()
 	sp.radius = r

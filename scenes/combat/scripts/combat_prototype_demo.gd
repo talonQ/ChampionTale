@@ -64,13 +64,15 @@ const _VISUAL_BY_UNIT_ID := {
 	7: preload("res://assets/pokemon/volibear/avatar.tscn"),
 	8: preload("res://assets/pokemon/wukong/avatar.tscn"),
 }
-const _SLOT_POSITION := {
-	1: Vector3(-3.6, 0, 3.5),
-	2: Vector3(0, 0, 3.5),
-	3: Vector3(3.6, 0, 3.5),
-	4: Vector3(-3.6, 0, -3.5),
-	5: Vector3(0, 0, -3.5),
-	6: Vector3(3.6, 0, -3.5),
+## 各 `unit.id` 在战场上的本地坐标（`BattleField` 子节点）。Z 绝对值越小，敌我两排越近。
+@export var slot_position_z: float = 2.6
+var _SLOT_POSITION := {
+	1: Vector3(-3.6, 0, slot_position_z),
+	2: Vector3(0, 0, slot_position_z),
+	3: Vector3(3.6, 0, slot_position_z),
+	4: Vector3(-3.6, 0, -slot_position_z),
+	5: Vector3(0, 0, -slot_position_z),
+	6: Vector3(3.6, 0, -slot_position_z),
 }
 const SCENE_MAIN_MENU := "res://scenes/ui/main_menu.tscn"
 const _SCENE_MAIN_MENU := "res://scenes/ui/main_menu.tscn"

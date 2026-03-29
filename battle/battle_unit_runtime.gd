@@ -34,6 +34,11 @@ var active_statuses: Dictionary = {}
 ## 同速重排时使用的临时随机键，由战斗控制器每轮写入。
 var sort_tiebreak: float = 0.0
 
+## 伤害结算：威力阶段钩子 `{ "p": int, "c": Callable }`，`p` 越小越早执行。
+var _trait_skill_power_hooks: Array[Dictionary] = []
+## 伤害结算：粗伤阶段钩子（在 atk+power-def 之后）。
+var _trait_raw_damage_hooks: Array[Dictionary] = []
+
 
 func visual_lookup_id() -> int:
 	return visual_asset_id if visual_asset_id > 0 else id
@@ -84,3 +89,34 @@ func set_status(kind: BattleStatus.Kind, enabled: bool) -> void:
 		active_statuses[kind] = true
 	else:
 		active_statuses.erase(kind)
+
+
+func clear_trait_damage_hooks() -> void:
+	_trait_skill_power_hooks.clear()
+	_trait_raw_damage_hooks.clear()
+
+
+## `hook(ctx: BattleDamageModifyContext) -> void`
+func register_trait_skill_power_hook(priority: int, hook: Callable) -> void:
+	_trait_skill_power_hooks.append({"p": priority, "c": hook})
+	_trait_skill_power_hooks.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return int(a["p"]) < int(b["p"]))
+
+
+## `hook(ctx: BattleDamageModifyContext) -> void`
+func register_trait_raw_damage_hook(priority: int, hook: Callable) -> void:
+	_trait_raw_damage_hooks.append({"p": priority, "c": hook})
+	_trait_raw_damage_hooks.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return int(a["p"]) < int(b["p"]))
+
+
+func run_trait_skill_power_hooks(ctx: Variant) -> void:
+	for entry in _trait_skill_power_hooks:
+		var c: Callable = entry["c"]
+		if c.is_valid():
+			c.call(ctx)
+
+
+func run_trait_raw_damage_hooks(ctx: Variant) -> void:
+	for entry in _trait_raw_damage_hooks:
+		var c: Callable = entry["c"]
+		if c.is_valid():
+			c.call(ctx)

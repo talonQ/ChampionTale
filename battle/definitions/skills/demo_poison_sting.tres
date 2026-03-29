@@ -1,12 +1,10 @@
-[gd_resource type="Resource" script_class="SkillData" format=3]
+[gd_resource type="Resource" script_class="SkillData" format=3 uid="uid://ck6v03ek1yi34"]
 
-[ext_resource type="Script" path="res://battle/skill_data.gd" id="1"]
-[ext_resource type="Script" path="res://battle/skill_on_hit_effect.gd" id="2"]
+[ext_resource type="Script" uid="uid://b1gilu06gqybx" path="res://battle/skill_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://bjiiyfvuodqb8" path="res://battle/skill_on_hit_effect.gd" id="2"]
 
 [sub_resource type="Resource" id="Sub_fx"]
 script = ExtResource("2")
-status = 0
-chance = 1.0
 
 [resource]
 script = ExtResource("1")
@@ -16,5 +14,4 @@ description = "不造成伤害；命中后使目标中毒（回合轮替时按�
 focus_cost = 7
 hit_chance = 0.9
 deals_damage = false
-power = 0
 on_hit_status_effects = Array[ExtResource("2")]([SubResource("Sub_fx")])
