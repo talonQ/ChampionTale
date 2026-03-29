@@ -3,7 +3,8 @@ extends RefCounted
 ## 悬停单位说明文案（BBCode），与布局/拾取无关。
 
 
-static func format_bbcode(u: BattleUnitRuntime) -> String:
+## 名称、数值、状态、回合信息（不含特性）。
+static func format_stats_bbcode(u: BattleUnitRuntime) -> String:
 	var side := "[color=#6ab0ff]己方[/color]" if u.is_player_side else "[color=#ff8a6a]敌方[/color]"
 	var state := ""
 	if not u.is_alive():
@@ -14,9 +15,6 @@ static func format_bbcode(u: BattleUnitRuntime) -> String:
 		var st := _status_bbcode_line(u)
 		if not st.is_empty():
 			state += "\n" + st
-	var trait_line := _traits_bbcode_line(u)
-	if not trait_line.is_empty():
-		state += "\n" + trait_line
 	return (
 		"[b]%s[/b]  %s  Lv.%d\n"
 		% [u.display_name, side, u.level]
@@ -25,6 +23,28 @@ static func format_bbcode(u: BattleUnitRuntime) -> String:
 		+ "攻击 %d  ·  防御 %d" % [u.effective_atk(), u.effective_def()]
 		+ state
 	)
+
+
+## 特性名与说明；无特性时返回空字符串（不显示第二块 Tooltip）。
+static func format_traits_bbcode(u: BattleUnitRuntime) -> String:
+	if u.traits.is_empty():
+		return ""
+	var blocks: PackedStringArray = []
+	for trait_res in u.traits:
+		if trait_res == null:
+			continue
+		blocks.append("[b][color=#c9b8ff]特性 · %s[/color][/b]" % trait_res.display_name)
+		var desc := trait_res.description.strip_edges()
+		if not desc.is_empty():
+			blocks.append(desc)
+	if blocks.is_empty():
+		return ""
+	return "\n\n".join(blocks)
+
+
+## 兼容旧调用；等价于 `format_stats_bbcode`。
+static func format_bbcode(u: BattleUnitRuntime) -> String:
+	return format_stats_bbcode(u)
 
 
 static func _status_bbcode_line(u: BattleUnitRuntime) -> String:
@@ -36,16 +56,3 @@ static func _status_bbcode_line(u: BattleUnitRuntime) -> String:
 	if bits.is_empty():
 		return ""
 	return "状态：" + " · ".join(bits)
-
-
-static func _traits_bbcode_line(u: BattleUnitRuntime) -> String:
-	if u.traits.is_empty():
-		return ""
-	var bits: PackedStringArray = []
-	for trait_res in u.traits:
-		if trait_res == null:
-			continue
-		bits.append("[color=#c9b8ff]「%s」[/color]" % trait_res.display_name)
-	if bits.is_empty():
-		return ""
-	return "特性：" + " ".join(bits)

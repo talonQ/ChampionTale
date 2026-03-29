@@ -214,6 +214,23 @@ fit_content = true
 scroll_active = false
 autowrap_mode = 2
 
+[node name="BattleTooltipTrait" type="PanelContainer" parent="TooltipLayer" unique_id=1579072372]
+unique_name_in_owner = true
+visible = false
+offset_right = 280.0
+offset_bottom = 120.0
+mouse_filter = 2
+
+[node name="TooltipTraitText" type="RichTextLabel" parent="TooltipLayer/BattleTooltipTrait" unique_id=1626976954]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 14
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 2
+
 [node name="BattleResultLayer" type="CanvasLayer" parent="." unique_id=88110001]
 unique_name_in_owner = true
 layer = 30

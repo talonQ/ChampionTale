@@ -83,6 +83,8 @@ const _SCENE_MAIN_MENU := "res://scenes/ui/main_menu.tscn"
 @onready var _right_action_dock: Control = %RightActionDock
 @onready var _battle_tooltip: PanelContainer = %BattleTooltip
 @onready var _tooltip_text: RichTextLabel = %TooltipText
+@onready var _battle_tooltip_trait: PanelContainer = %BattleTooltipTrait
+@onready var _tooltip_trait_text: RichTextLabel = %TooltipTraitText
 @onready var _battle_hud_root: Control = %BattleHudRoot
 @onready var _unit_bars_root: Control = %UnitBarsRoot
 @onready var _turn_order_strip_root: Control = %TurnOrderStrip
@@ -171,6 +173,8 @@ func _apply_battle_ui_theme() -> void:
 	_unit_bars_root.theme = ui_theme
 	_battle_tooltip.theme = ui_theme
 	_battle_tooltip.theme_type_variation = &"BattleTooltipPanel"
+	_battle_tooltip_trait.theme = ui_theme
+	_battle_tooltip_trait.theme_type_variation = &"BattleTooltipPanel"
 	var top_bar := get_node_or_null(^"TurnOrderLayer/TopBar") as Control
 	if top_bar != null:
 		top_bar.theme = ui_theme
@@ -545,7 +549,12 @@ func _update_hover_tooltip() -> void:
 	var mouse := get_viewport().get_mouse_position()
 	var hovered := get_viewport().gui_get_hovered_control()
 	if hovered != null:
-		if _battle_tooltip.is_ancestor_of(hovered) or hovered == _battle_tooltip:
+		if (
+			_battle_tooltip.is_ancestor_of(hovered)
+			or hovered == _battle_tooltip
+			or _battle_tooltip_trait.is_ancestor_of(hovered)
+			or hovered == _battle_tooltip_trait
+		):
 			if _battle_tooltip.visible:
 				_place_battle_tooltip(mouse)
 			return
@@ -553,8 +562,10 @@ func _update_hover_tooltip() -> void:
 			var hud_tip := _battle_tooltip_bbcode_for_hud_hover(hovered)
 			if hud_tip.is_empty():
 				_battle_tooltip.visible = false
+				_battle_tooltip_trait.visible = false
 				return
 			_battle_tooltip_place_left = _is_descendant_of(hovered, _right_action_dock)
+			_battle_tooltip_trait.visible = false
 			_tooltip_text.clear()
 			_tooltip_text.append_text(hud_tip)
 			_battle_tooltip.visible = true
@@ -565,30 +576,52 @@ func _update_hover_tooltip() -> void:
 	var u := _CombatBattlePick.ray_pick_unit(mouse, _camera_3d, w3d)
 	if u == null or not u.is_alive():
 		_battle_tooltip.visible = false
+		_battle_tooltip_trait.visible = false
 		return
 	_battle_tooltip_place_left = false
 	_tooltip_text.clear()
-	_tooltip_text.append_text(_CombatUnitTooltipText.format_bbcode(u))
+	_tooltip_text.append_text(_CombatUnitTooltipText.format_stats_bbcode(u))
 	_battle_tooltip.visible = true
 	_battle_tooltip.reset_size()
+	var trait_bb := _CombatUnitTooltipText.format_traits_bbcode(u)
+	if trait_bb.is_empty():
+		_battle_tooltip_trait.visible = false
+	else:
+		_tooltip_trait_text.clear()
+		_tooltip_trait_text.append_text(trait_bb)
+		_battle_tooltip_trait.visible = true
+		_battle_tooltip_trait.reset_size()
 	_place_battle_tooltip(mouse)
 
 
 func _place_battle_tooltip(mouse: Vector2) -> void:
-	var psz: Vector2 = _battle_tooltip.size
 	var vp := get_viewport().get_visible_rect().size
-	var pos: Vector2
+	var psz_main: Vector2 = _battle_tooltip.size
+	var stack_gap := 6.0
+	var pos_main: Vector2
 	if _battle_tooltip_place_left:
 		var gap_x := 24.0
 		var gap_y := 8.0
-		pos.x = mouse.x - psz.x - gap_x
-		pos.y = mouse.y - psz.y * 0.35 - gap_y
+		pos_main.x = mouse.x - psz_main.x - gap_x
+		pos_main.y = mouse.y - psz_main.y * 0.35 - gap_y
 	else:
 		var pad := Vector2(14, 14)
-		pos = mouse + pad
-	pos.x = clampf(pos.x, 6.0, maxf(6.0, vp.x - psz.x - 6.0))
-	pos.y = clampf(pos.y, 6.0, maxf(6.0, vp.y - psz.y - 6.0))
-	_battle_tooltip.position = pos
+		pos_main = mouse + pad
+	pos_main.x = clampf(pos_main.x, 6.0, maxf(6.0, vp.x - psz_main.x - 6.0))
+	pos_main.y = clampf(pos_main.y, 6.0, maxf(6.0, vp.y - psz_main.y - 6.0))
+	_battle_tooltip.position = pos_main
+	if not _battle_tooltip_trait.visible:
+		return
+	var psz_trait: Vector2 = _battle_tooltip_trait.size
+	var pos_trait := Vector2(pos_main.x, pos_main.y + psz_main.y + stack_gap)
+	pos_trait.x = clampf(pos_trait.x, 6.0, maxf(6.0, vp.x - psz_trait.x - 6.0))
+	if pos_trait.y + psz_trait.y > vp.y - 6.0:
+		var shift_up := pos_trait.y + psz_trait.y - (vp.y - 6.0)
+		pos_main.y = maxf(6.0, pos_main.y - shift_up)
+		_battle_tooltip.position = pos_main
+		pos_trait.y = pos_main.y + psz_main.y + stack_gap
+	pos_trait.y = clampf(pos_trait.y, 6.0, maxf(6.0, vp.y - psz_trait.y - 6.0))
+	_battle_tooltip_trait.position = pos_trait
 
 
 func _is_descendant_of(node: Node, ancestor: Node) -> bool:
