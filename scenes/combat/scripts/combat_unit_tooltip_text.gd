@@ -14,6 +14,9 @@ static func format_bbcode(u: BattleUnitRuntime) -> String:
 		var st := _status_bbcode_line(u)
 		if not st.is_empty():
 			state += "\n" + st
+	var trait_line := _traits_bbcode_line(u)
+	if not trait_line.is_empty():
+		state += "\n" + trait_line
 	return (
 		"[b]%s[/b]  %s  Lv.%d\n"
 		% [u.display_name, side, u.level]
@@ -33,3 +36,16 @@ static func _status_bbcode_line(u: BattleUnitRuntime) -> String:
 	if bits.is_empty():
 		return ""
 	return "状态：" + " · ".join(bits)
+
+
+static func _traits_bbcode_line(u: BattleUnitRuntime) -> String:
+	if u.traits.is_empty():
+		return ""
+	var bits: PackedStringArray = []
+	for trait_res in u.traits:
+		if trait_res == null:
+			continue
+		bits.append("[color=#c9b8ff]「%s」[/color]" % trait_res.display_name)
+	if bits.is_empty():
+		return ""
+	return "特性：" + " ".join(bits)

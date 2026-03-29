@@ -7,6 +7,8 @@
 [ext_resource type="Resource" path="res://battle/definitions/skills/common_self_heal_50.tres" id="4"]
 [ext_resource type="Resource" path="res://battle/definitions/skills/common_haste.tres" id="5"]
 [ext_resource type="Resource" path="res://battle/definitions/skills/common_vision_focus.tres" id="6"]
+[ext_resource type="Script" path="res://battle/trait_data.gd" id="trait_t"]
+[ext_resource type="Resource" path="res://battle/definitions/traits/trait_poison_skin.tres" id="tr_ps"]
 
 [resource]
 script = ExtResource("1")
@@ -20,3 +22,4 @@ def_base = 7
 spd_base = 16
 focus_max = 38
 learnable_skills = Array[ExtResource("2_mrndw")]([ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6")])
+traits = Array[ExtResource("trait_t")]([ExtResource("tr_ps")])

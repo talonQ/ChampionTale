@@ -104,6 +104,14 @@ static func _pick_n_skills_without_replacement(
 	return p
 
 
+static func _traits_from_definition(def: BattleUnitDefinition) -> Array[TraitData]:
+	var out: Array[TraitData] = []
+	for t in def.traits:
+		if t != null:
+			out.append(t)
+	return out
+
+
 static func _assign_runtime_skills(
 	u: BattleUnitRuntime,
 	def: BattleUnitDefinition,
@@ -146,6 +154,7 @@ static func runtime_from_template(
 	u.spd_base = def.spd_base
 	u.focus_max = def.focus_max
 	u.focus = def.focus_max
+	u.traits = _traits_from_definition(def)
 	_assign_runtime_skills(u, def, r)
 	return u
 
@@ -169,5 +178,6 @@ static func runtime_from_definition(
 	u.spd_base = def.spd_base
 	u.focus_max = def.focus_max
 	u.focus = def.focus_max
+	u.traits = _traits_from_definition(def)
 	_assign_runtime_skills(u, def, r)
 	return u

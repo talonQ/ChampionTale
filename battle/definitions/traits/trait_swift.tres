@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TraitData" format=3]
+
+[ext_resource type="Script" path="res://battle/trait_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"trait_swift"
+display_name = "迅疾"
+description = "速度高于目标时，按速度差提高伤害（有上限）。"
+kind = 3
+swift_damage_mult_per_speed_point = 0.02
+swift_max_damage_mult_bonus = 0.5

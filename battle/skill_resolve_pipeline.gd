@@ -123,6 +123,7 @@ static func _resolve_single_enemy(ctx: SkillResolveContext) -> void:
 		ctx.on_unit_changed.call(target)
 	if target.is_alive():
 		_Blocks.append_on_hit_status_effects(sk, target, parts, ctx.on_unit_changed)
+		BattleTraitResolver.append_poison_skin_after_damage(actor, target, sk, parts, ctx.on_unit_changed)
 	ctx.segments.append(opener + "\n" + "\n".join(PackedStringArray(parts)))
 
 
@@ -174,6 +175,7 @@ static func _resolve_single_ally(ctx: SkillResolveContext) -> void:
 		_Blocks.append_target_speed_lines(sk, target, parts, ctx.on_unit_changed)
 	if ally_hit and target.is_alive():
 		_Blocks.append_on_hit_status_effects(sk, target, parts, ctx.on_unit_changed)
+		BattleTraitResolver.append_poison_skin_after_damage(actor, target, sk, parts, ctx.on_unit_changed)
 	if not parts.is_empty() and out.is_empty():
 		out.append(opener + "\n" + "\n".join(PackedStringArray(parts)))
 	ctx.segments.append_array(out)

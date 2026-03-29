@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="TraitData" format=3]
+
+[ext_resource type="Script" path="res://battle/trait_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"trait_poison_skin"
+display_name = "毒性皮肤"
+description = "攻击造成伤害后，有概率使目标中毒。"
+kind = 2
+poison_skin_chance = 0.35

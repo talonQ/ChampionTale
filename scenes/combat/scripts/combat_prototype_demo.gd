@@ -328,10 +328,19 @@ func _advance_battle() -> void:
 			_state.units,
 			_on_unit_stats_changed,
 		)
-		if not dot_lines.is_empty():
+		var regen_lines := _CombatActionExecutor.apply_between_round_trait_regen(
+			_state.units,
+			_on_unit_stats_changed,
+		)
+		var between_round_lines: Array[String] = []
+		for s in dot_lines:
+			between_round_lines.append(s)
+		for s in regen_lines:
+			between_round_lines.append(s)
+		if not between_round_lines.is_empty():
 			_busy = true
 			_set_actions_enabled(false)
-			_narration.start_chain(dot_lines, func() -> void:
+			_narration.start_chain(between_round_lines, func() -> void:
 				_busy = false
 				_finish_round_transition_after_dot_damage()
 			)

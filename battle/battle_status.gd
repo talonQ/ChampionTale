@@ -10,7 +10,7 @@ enum Kind {
 	PARALYSIS,
 }
 
-const POISON_MAX_HP_FRACTION_PER_ROUND: float = 0.08
+const POISON_MAX_HP_FRACTION_PER_ROUND: float = 0.16
 ## 与常见宝可梦设定一致：当次行动无法执行的概率。
 const PARALYSIS_ACTION_FAIL_CHANCE: float = 0.5
 

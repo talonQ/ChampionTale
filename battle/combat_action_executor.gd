@@ -86,6 +86,13 @@ static func apply_between_round_status_damage(
 	return lines
 
 
+static func apply_between_round_trait_regen(
+	units: Array[BattleUnitRuntime],
+	on_unit_changed: Callable = Callable(),
+) -> Array[String]:
+	return BattleTraitResolver.apply_round_end_regen(units, on_unit_changed)
+
+
 static func alive_player_side(units: Array[BattleUnitRuntime]) -> Array[BattleUnitRuntime]:
 	var out: Array[BattleUnitRuntime] = []
 	for u in units:

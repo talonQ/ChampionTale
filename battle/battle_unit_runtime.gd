@@ -23,6 +23,8 @@ var focus: int = 30
 var focus_max: int = 30
 
 var skills: Array[SkillData] = []
+## 本场携带的特性（自 `BattleUnitDefinition` 拷贝 Resource 引用）。
+var traits: Array[TraitData] = []
 ## skill_id -> 剩余冷却回合数（按战斗回合递减）
 var skill_cooldown_remaining: Dictionary = {}
 var acted_this_round: bool = false
