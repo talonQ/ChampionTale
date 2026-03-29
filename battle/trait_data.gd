@@ -12,6 +12,10 @@ enum Kind {
 	POISON_SKIN,
 	## 仅当己方有效速度高于目标时：按速度差提高伤害（倍率有上限）。
 	SWIFT_SPEED_GAP,
+	## 每回合全员行动完毕后，按最大专注比例回复专注。
+	FOCUS_RESTORE_END_ROUND,
+	## 每回合结束时：叠加攻击修正并降低防御修正（本场战斗持续叠加，各实例仅处理首个同类特性）。
+	POWER_TOLL_END_ROUND,
 }
 
 @export var id: StringName
@@ -30,3 +34,12 @@ enum Kind {
 @export_range(0.0, 2.0) var swift_damage_mult_per_speed_point: float = 0.02
 ## 倍率加成上限（例如 0.5 表示最多 ×1.5）。
 @export_range(0.0, 5.0) var swift_max_damage_mult_bonus: float = 0.5
+
+@export_group("专注力（FOCUS_RESTORE_END_ROUND）")
+@export_range(0.0, 1.0) var focus_restore_max_fraction: float = 0.16
+
+@export_group("力量代价（POWER_TOLL_END_ROUND）")
+## 每回合结束时叠加到 `atk_mod`（可叠多场）。
+@export var power_toll_atk_mod: int = 6
+## 每回合结束时叠加到 `def_mod`（通常为负）。
+@export var power_toll_def_mod: int = -5

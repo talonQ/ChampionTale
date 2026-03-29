@@ -8,5 +8,5 @@ id = &"trait_swift"
 display_name = "迅疾"
 description = "速度高于目标时，按速度差提高伤害（有上限）。"
 kind = 3
-swift_damage_mult_per_speed_point = 10
-swift_max_damage_mult_bonus = 5.0
+swift_damage_mult_per_speed_point = 1
+swift_max_damage_mult_bonus = 1.0

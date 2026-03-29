@@ -8,7 +8,6 @@
 [ext_resource type="Resource" path="res://battle/definitions/skills/common_haste.tres" id="5"]
 [ext_resource type="Resource" path="res://battle/definitions/skills/common_vision_focus.tres" id="6"]
 [ext_resource type="Script" uid="uid://c4llt1seyk7r1" path="res://battle/trait_data.gd" id="trait_t"]
-;[ext_resource type="Resource" path="res://battle/definitions/traits/trait_bully.tres" id="tr_bully"]
 [ext_resource type="Resource" path="res://battle/definitions/traits/trait_swift.tres" id="tr_swift"]
 
 [resource]
@@ -20,7 +19,7 @@ level = 6
 hp_max = 88
 atk_base = 13
 def_base = 8
-spd_base = 100
+spd_base = 40
 focus_max = 36
 learnable_skills = Array[ExtResource("2_kos2a")]([ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6")])
 traits = Array[ExtResource("trait_t")]([ExtResource("tr_swift")])

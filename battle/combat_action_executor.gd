@@ -86,11 +86,19 @@ static func apply_between_round_status_damage(
 	return lines
 
 
+## 回合末特性：回复力、专注力、力量代价等（与中毒 DOT 同一大轮替时机内、在其后执行）。
+static func apply_between_round_trait_passives(
+	units: Array[BattleUnitRuntime],
+	on_unit_changed: Callable = Callable(),
+) -> Array[String]:
+	return BattleTraitResolver.apply_round_end_passives(units, on_unit_changed)
+
+
 static func apply_between_round_trait_regen(
 	units: Array[BattleUnitRuntime],
 	on_unit_changed: Callable = Callable(),
 ) -> Array[String]:
-	return BattleTraitResolver.apply_round_end_regen(units, on_unit_changed)
+	return apply_between_round_trait_passives(units, on_unit_changed)
 
 
 static func alive_player_side(units: Array[BattleUnitRuntime]) -> Array[BattleUnitRuntime]:

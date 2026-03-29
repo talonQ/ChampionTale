@@ -334,7 +334,7 @@ func _advance_battle() -> void:
 			_state.units,
 			_on_unit_stats_changed,
 		)
-		var regen_lines := _CombatActionExecutor.apply_between_round_trait_regen(
+		var regen_lines := _CombatActionExecutor.apply_between_round_trait_passives(
 			_state.units,
 			_on_unit_stats_changed,
 		)
